@@ -35,7 +35,9 @@ int main( int argc, char** argv ) {
         std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]\n"
                   << "\n----- For example -----\n" 
                   << "$ " << argv[0] << " input.ply output.xyz 0.1 0.002\n"
-                  << "> sigma = b_leng * 0.002\n"
+                  << "> Gaussian : sigma = b_leng * 0.002\n"
+                  << "> Poisson  : lamda = b_leng * 0.002\n"
+                  << "> Spike    : none\n"
                   << "> Add noise with 0.1*100=10 percent.\n"
                   << std::endl;
 
