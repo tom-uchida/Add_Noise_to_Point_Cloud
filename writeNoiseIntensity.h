@@ -24,7 +24,7 @@ const int   COLOR[3]    = { 255, 0, 0 };
  */
 /*===========================================================================*/
 void writeNoiseIntensity(  kvs::PolygonObject *_ply,
-                           std::vector<float> &_ni,
+                           //std::vector<float> &_ni,
                            char* _filename,
                            WritingDataType _type = Ascii ) {
     size_t  num         = _ply->numberOfVertices(); 
@@ -89,15 +89,16 @@ void writeNoiseIntensity(  kvs::PolygonObject *_ply,
             cl = (unsigned char)b;
             fout.write( (char*)&cl, sizeof(unsigned char) );
 
-            float tmp = _ni[i]; 
-            fout.write( (char*)&tmp, sizeof(float) );
+            // float tmp = _ni[i]; 
+            // fout.write( (char*)&tmp, sizeof(float) );
         
         // Ascii
         } else {     
             fout << x   << " " << y  << " " << z  << " "
 	             << nx  << " " << ny << " " << nz << " "
 	             << r   << " " << g  << " " << b  << " " 
-                 << _ni[i] << std::endl;
+                 << std::endl;
+                 //<< _ni[i] << std::endl;
         }
     }                                                                           
 

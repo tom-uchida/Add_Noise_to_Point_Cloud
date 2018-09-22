@@ -17,30 +17,37 @@ public:
 
 public:
     AddNoise( void );
-    AddNoise( const FeatureType _type, double _ratio_of_adding_noise );
+    AddNoise( double _ratio_of_adding_noise, double _param_spec_to_noise);
 
     void setNoiseType( NoiseType _type );
-    void setSigma( double _ratio4sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax  );
     void addNoise( kvs::PolygonObject* _ply );
+    std::vector<bool> getIsNoisePoints( void ) { return m_is_noise_points; }
 
     std::vector<float> getNoiseIntensities( void ) { return m_noise_intensities; }
     double getMaxNoiseIntensity( void ) { return m_max_noise_intensity; }
     double getMinNoiseIntensity( void ) { return m_min_noise_intensity; }
 
 private:
-    NoiseType   m_type;
-    size_t	    m_number;
-    double	    m_sigma;
-    double	    m_ratio_of_adding_noise;
+    NoiseType           m_type;
+    size_t	            m_number;
+    double	            m_sigma;
+    double              m_lamda;
+    double	            m_ratio_of_adding_noise;
+    double              m_param_spec_to_noise;
+    std::vector<bool>   m_is_noise_points;
 
-    std::vector<float> m_noise_intensities;
-    double	    m_max_noise_intensity;
-    double      m_min_noise_intensity;
+    std::vector<float>  m_noise_intensities;
+    double	            m_max_noise_intensity;
+    double              m_min_noise_intensity;
 
 private:
-    void addGaussianNoise( std::vector<pcl::PointXYZ> &point );
-    void applyPoissonNoise( std::vector<pcl::PointXYZ> &point );
-    void addSpikeNoise( std::vector<pcl::PointXYZ> &point );
+    void setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
+    void addGaussianNoise( kvs::PolygonObject* _ply );
+
+    void setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
+    void applyPoissonNoise( kvs::PolygonObject* _ply );
+
+    void addSpikeNoise( kvs::PolygonObject* _ply );    
 };
 
 #endif
