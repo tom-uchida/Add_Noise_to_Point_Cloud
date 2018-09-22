@@ -1,11 +1,12 @@
 // Program to add noise to point cloud
 
 // USAGE:
-// ./agn [data_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]
+// ./addNoise [data_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]
 
 // [For example]
-// $ ./agn input.ply output.xyz 0.1 0.002
-// > sigma = b_leng * 0.002
+// $ ./addNoise input.ply output.xyz 0.1 0.002
+// > sigma = b_leng * 0.002 (Gaussian)
+// > lamda = b_leng * 0.002 (Poisson)
 // > Add noise with 0.1*100=10 percent.
 
 #include <iostream>
@@ -57,8 +58,8 @@ int main( int argc, char** argv ) {
 
     // ----- Select noise type ( Gaussian or Poisson or Spike )-----
     //an->setNoiseType( AddNoise::Gaussian );
-    an->setNoiseType( AddNoise::Poisson );
-    // an->setNoiseType( AddNoise::Spike );
+    //an->setNoiseType( AddNoise::Poisson );
+    an->setNoiseType( AddNoise::Spike );
 
 
     // ---------------------

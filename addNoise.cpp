@@ -7,6 +7,7 @@
 #include <kvs/BoxMuller> 
 #include <kvs/MersenneTwister>
 #include <random>   // for poisson distribution
+#include <fstream>
 
 
 AddNoise::AddNoise( void ): 
@@ -249,4 +250,71 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
 }
 
 void AddNoise::addSpikeNoise( kvs::PolygonObject* _ply ) {
+    std::vector<pcl::PointXYZ>      points;
+    kvs::MersenneTwister            uniRand;
+
+    kvs::ValueArray<kvs::Real32> coords  = _ply->coords(); 
+    kvs::ValueArray<kvs::Real32> normals = _ply->normals();
+    size_t num      = _ply->numberOfVertices();
+    m_number        = num;
+    bool hasNormal  = false;
+    if ( num == _ply->numberOfNormals() ) hasNormal = true;
+
+    std::cout << "\n\nNumber of points" << std::endl;
+    std::cout << "> " << m_number                   << std::endl;
+
+    std::cout << "\n\n============================================" << std::endl;
+    std::cout << "     Add Spike noise with " << m_ratio_of_adding_noise*100 << " percent."    << std::endl;
+    std::cout << "============================================" << std::endl;
+
+    // Pre-Process for generating 3D random point
+    kvs::Vector3f min_BB = _ply->minObjectCoord();
+    kvs::Vector3f max_BB = _ply->maxObjectCoord();
+    float x_BB = max_BB.x() - min_BB.x();
+    float y_BB = max_BB.y() - min_BB.y();
+    float z_BB = max_BB.z() - min_BB.z();
+
+    std::ofstream fout_spike_noise_point("spike_noise_point.txt");
+    int noise_counter = 0;
+    // coords[]（KVS） → pcl::PointXYZ(x,y,z)（PCL）
+    for ( size_t i = 0; i < num; i++ ) {
+        float x  = coords[3*i];
+        float y  = coords[3*i+1];
+        float z  = coords[3*i+2];
+        float nx = 0.0;
+        float ny = 0.0;
+        float nz = 0.0; 
+        if ( hasNormal ) {
+            nx = normals[3*i];
+            ny = normals[3*i+1];
+            nz = normals[3*i+2];
+        }
+
+        // Add Spike noise
+        if ( uniRand() < m_ratio_of_adding_noise ) {
+            // Random 3D point in Bounding Box
+            x = x_BB*uniRand() + min_BB.x(); // x coord is a random number [min_BB.x, max_BB.x]
+            y = y_BB*uniRand() + min_BB.y(); // y coord is a random number [min_BB.y, max_BB.y]
+            z = z_BB*uniRand() + min_BB.z(); // z coord is a random number [min_BB.z, max_BB.z]
+
+            // write to .txt file
+            fout_spike_noise_point << x << " " << y << " " << z << std::endl;
+            
+            noise_counter++;
+            m_is_noise_points.push_back( true );
+
+        } else {
+            m_is_noise_points.push_back( false );
+        }
+      
+        // After adding noise
+        coords[3*i]     = x;
+        coords[3*i+1]   = y;
+        coords[3*i+2]   = z;
+        points.push_back( pcl::PointXYZ( x, y, z ) );
+        _ply->setCoords( coords );     
+    }
+
+    std::cout << "\nNumber of noised points" << std::endl;
+    std::cout << "> " << noise_counter       << std::endl;
 }
