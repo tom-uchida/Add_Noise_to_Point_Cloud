@@ -5,3 +5,4 @@ Makefile.kvs
 *.o
 *.spbr
 *.txt
+DOC/
