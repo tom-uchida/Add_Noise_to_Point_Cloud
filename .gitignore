@@ -1,2 +1,6 @@
+addNoise
+spbr
+Makefile
+Makefile.kvs
 *.o
 *.spbr
