@@ -18,10 +18,10 @@ Add the following three types of noises to point cloud
 
 
 ## Three types of noises
-1. Gaussian (AddNoise::Gaussian)
+### 1. Gaussian (AddNoise::Gaussian)
 sigma = BB_length * 0.001(argv[4])
 
-2. Poisson (AddNoise::Poisson)
+### 2. Poisson (AddNoise::Poisson)
 lamda = BB_length * 0.001(argv[4])
 
-3. Spike (AddNoise::Spike)
+### 3. Spike (AddNoise::Spike)
