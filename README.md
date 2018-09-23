@@ -11,7 +11,7 @@ Add the following three types of noises to point cloud
 ## For example
 `./addNoise [.ply] [.spbr] [0.1] [0.001] [-g]`
 
-1. Gaussian
+### 1. Gaussian
   - argv[3] : 0.1
     - Add noise with 10 percent. (0.1*100)
 
@@ -22,7 +22,7 @@ Add the following three types of noises to point cloud
     - AddNoise::Gaussian
 
 
-2. Poisson
+### 2. Poisson
   - argv[3] : 0.1
     - Add noise with 10 percent. (0.1*100)
 
@@ -33,7 +33,7 @@ Add the following three types of noises to point cloud
     - AddNoise::Poisson
 
 
-3. Spike
+### 3. Spike
   - argv[3] : 0.1
     - Add noise with 10 percent. (0.1*100)
 
