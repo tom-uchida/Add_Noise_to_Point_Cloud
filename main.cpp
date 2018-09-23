@@ -3,21 +3,23 @@
 // ===================================================
 
 // USAGE:
-// ./addNoise [data_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]
+// ./addNoise [data_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]
 
 // [For example]
-// $ ./addNoise input.ply output.xyz 0.1 0.001
+// $ ./addNoise input.ply output.spbr 0.1 0.001 -g
 // > Gaussian : sigma = b_leng * 0.001
 // > Poisson  : lamda = b_leng * 0.001
 // > Spike    : none
 // > Add noise with (0.1*100=)10 percent.
 
 #include <iostream>
+#include <cstring> 
 #include <cstdlib>
 #include <vector>
 #include "importPointClouds.h"
 #include "addNoise.h"
 #include "writeSPBR.h"
+#include "noise_option.h"
 
 #include <kvs/PolygonObject>
 #include <kvs/PointObject>
@@ -37,7 +39,7 @@ int main( int argc, char** argv ) {
     char outSPBRfile[512];
     strcpy( outSPBRfile, OUT_FILE ); 
 
-    if ( argc != 5 ) {
+    if ( argc != 6 ) {
         std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]\n"
                   << "\n----- For example -----\n" 
                   << "$ " << argv[0] << " input.ply output.xyz 0.1 0.001\n"
@@ -48,7 +50,7 @@ int main( int argc, char** argv ) {
                   << std::endl;
         exit(1);
 
-    } else if ( argc == 5 ) {
+    } else if ( argc >= 3 ) {
         strcpy( outSPBRfile, argv[2] );
     }
     
@@ -63,10 +65,30 @@ int main( int argc, char** argv ) {
     // ----- Set up for adding noise -----
     AddNoise *an = new AddNoise( atof(argv[3]), atof(argv[4]) );
 
-    // ----- Select noise type ( Gaussian or Poisson or Spike )-----
-    //an->setNoiseType( AddNoise::Gaussian );
-    //an->setNoiseType( AddNoise::Poisson );
-    an->setNoiseType( AddNoise::Spike );
+    // ----- Apply noise type ( Gaussian or Poisson or Spike ) -----
+    for ( int i = 1; i < argc; i++ ) {
+        // Gaussian
+        if ( !strncmp( GAUSSIAN_OPTION, argv[i], strlen( GAUSSIAN_OPTION ) ) ) {
+            an->setNoiseType( AddNoise::Gaussian );
+            std::cout << "\n\nNoise Type"   << std::endl;
+            std::cout << "> Gaussian Noise" << std::endl;
+            i++;
+
+        // Poisson
+        } else if ( !strncmp( POISSON_OPTION, argv[i], strlen( POISSON_OPTION ) ) ) {
+            an->setNoiseType( AddNoise::Poisson );
+            std::cout << "\n\nNoise Type"  << std::endl;
+            std::cout << "> Poisson Noise" << std::endl;
+            i++;
+
+        // Spike
+        } else if ( !strncmp( SPIKE_OPTION, argv[i], strlen( SPIKE_OPTION ) ) ) {
+            an->setNoiseType( AddNoise::Spike );
+            std::cout << "\n\nNoise Type" << std::endl;
+            std::cout << "> Spike Noise"  << std::endl;
+            i++;
+        }
+    }
 
 
     // ---------------------
