@@ -1,5 +1,5 @@
-#ifndef _writeNoiseIntensity_H__
-#define _writeNoiseIntensity_H__
+#ifndef _writeSPBR_H__
+#define _writeSPBR_H__
 
 #include <kvs/PolygonObject>
 #include <vector>
@@ -21,30 +21,30 @@ const int   COLOR[3]    = { 255, 0, 0 };
  *  @param  *ply        point cloud
  *  @param  filename    output file name
  *  @param  type        Ascii or Binary
- */
+ **/
 /*===========================================================================*/
-void writeNoiseIntensity(  kvs::PolygonObject *_ply,
-                           //std::vector<float> &_ni,
-                           char* _filename,
-                           WritingDataType _type = Ascii ) {
+void writeSPBR(  kvs::PolygonObject *_ply,
+                 //std::vector<float> &_ni,
+                 char* _filename,
+                 WritingDataType _type = Ascii ) {
+
     size_t  num         = _ply->numberOfVertices(); 
     bool    hasNormal   = false;
     bool    hasColor    = false;
     if( num == _ply->numberOfNormals() ) hasNormal   = true; 
     if( num == _ply->numberOfColors() )  hasColor    = true;
-    // std::cout << "test\nnum : " << num << std::endl;
-    // std::cout << "colors : " << _ply->numberOfColors() << std::endl;
-    // std::cout << "hasColor : " << hasColor << std::endl;
     kvs::ValueArray<kvs::Real32>         coords      = _ply->coords();  
     kvs::ValueArray<kvs::Real32>         normals     = _ply->normals();
     kvs::ValueArray<kvs::UInt8>          colors      = _ply->colors();  
 
     std::ofstream fout( _filename );
-    if ( _type == Binary ) {
-        fout << "#/XYZ_BinaryData"                      << std::endl;  
-        fout << "#/NumParticles  " << num               << std::endl; 
-        fout << "#/XYZDataType  XYZNormalColorFeature"  << std::endl; 
-        fout << "#/EndHeader"                           << std::endl;     
+    if ( _type == Ascii ) {
+        fout << "#/SPBR_ASCII_Data"         << std::endl;
+        fout << "#/RepeatLevel 1"           << std::endl;
+        fout << "#/BGColorRGBByte 0 0 0"    << std::endl;
+        fout << "#/ImageResolution 1440"    << std::endl;
+        fout << "#/LOD 0"                   << std::endl;
+        fout << "#/EndHeader"               << std::endl;
     }
 
     // Write to ouput file
@@ -98,7 +98,7 @@ void writeNoiseIntensity(  kvs::PolygonObject *_ply,
 	             << nx  << " " << ny << " " << nz << " "
 	             << r   << " " << g  << " " << b  << " " 
                  << std::endl;
-                 //<< _ni[i] << std::endl;
+                 //<< _ni[i] << std::endl; // noise intensity
         }
     }                                                                           
 

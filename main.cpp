@@ -1,20 +1,23 @@
-// Program to add noise to point cloud
+// ===================================================
+//      Add three types of noises to point cloud
+// ===================================================
 
 // USAGE:
 // ./addNoise [data_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]
 
 // [For example]
-// $ ./addNoise input.ply output.xyz 0.1 0.002
-// > sigma = b_leng * 0.002 (Gaussian)
-// > lamda = b_leng * 0.002 (Poisson)
-// > Add noise with 0.1*100=10 percent.
+// $ ./addNoise input.ply output.xyz 0.1 0.001
+// > Gaussian : sigma = b_leng * 0.001
+// > Poisson  : lamda = b_leng * 0.001
+// > Spike    : none
+// > Add noise with (0.1*100=)10 percent.
 
 #include <iostream>
 #include <cstdlib>
 #include <vector>
 #include "importPointClouds.h"
 #include "addNoise.h"
-#include "writeNoiseIntensity.h"
+#include "writeSPBR.h"
 
 #include <kvs/PolygonObject>
 #include <kvs/PointObject>
@@ -25,26 +28,28 @@
 #include <kvs/Coordinate> 
 #include <kvs/ColorMap>
 
-const char OUT_FILE[] = "out_noised.xyz";
+#define EXEC_VIA_SPBR
+//#define EXEC_VIA_KVS
+
+const char OUT_FILE[] = "out_noised.spbr";
 
 int main( int argc, char** argv ) {
-    char outXYZfile[512];
-    strcpy( outXYZfile, OUT_FILE ); 
+    char outSPBRfile[512];
+    strcpy( outSPBRfile, OUT_FILE ); 
 
     if ( argc != 5 ) {
         std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]\n"
                   << "\n----- For example -----\n" 
-                  << "$ " << argv[0] << " input.ply output.xyz 0.1 0.002\n"
-                  << "> Gaussian : sigma = b_leng * 0.002\n"
-                  << "> Poisson  : lamda = b_leng * 0.002\n"
+                  << "$ " << argv[0] << " input.ply output.xyz 0.1 0.001\n"
+                  << "> Gaussian : sigma = b_leng * 0.001\n"
+                  << "> Poisson  : lamda = b_leng * 0.001\n"
                   << "> Spike    : none\n"
-                  << "> Add noise with 0.1*100=10 percent.\n"
+                  << "> Add noise with (0.1*100=)10 percent.\n"
                   << std::endl;
-
         exit(1);
 
     } else if ( argc == 5 ) {
-        strcpy( outXYZfile, argv[2] );
+        strcpy( outSPBRfile, argv[2] );
     }
     
     // ----- Import "point cloud data（argv[1]）" that user decided
@@ -116,19 +121,32 @@ int main( int argc, char** argv ) {
     // }
     ply->setColors( kvs::ValueArray<kvs::UInt8>( colors ) );
 
-    // ----- Output File for "xyzrgbf" -----
+    // ----- Write .spbr file -----
     WritingDataType type = Ascii;   // Writing data as ascii
-    writeNoiseIntensity( ply,                  /* kvs::PolygonObject *_ply        */  
-                         //noise_intensities,    /* std::vector<float> &_ni         */  
-                         outXYZfile,           /* char*              _filename    */  
-                         type );               /* WritingDataType    _type        */  
+    writeSPBR( ply,                    /* kvs::PolygonObject *_ply        */  
+               //noise_intensities,    /* std::vector<float> &_ni         */  
+               outSPBRfile,            /* char*              _filename    */  
+               type );                 /* WritingDataType    _type        */  
   
     // ----- Convert "PolygonObject（KVS）" to "PointObject（KVS）" -----
     kvs::PointObject* object = new kvs::PointObject( *ply );
     object->setSize( 1 );
     object->updateMinMaxCoords(); 
 
-    // ----- KVS screen -----
+
+
+    // ----- Exec. SPBR -----
+#ifdef EXEC_VIA_SPBR
+    std::string out_noised_spbr( outSPBRfile );
+    std::string EXEC("./spbr ");
+    EXEC += out_noised_spbr;
+    system( EXEC.c_str() );
+
+    return 0;
+#endif
+
+    // ----- Exec. KVS -----
+#ifdef EXEC_VIA_KVS
     kvs::glut::Application app( argc, argv );
     kvs::glut::Screen screen( &app );
 
@@ -146,4 +164,5 @@ int main( int argc, char** argv ) {
     screen.show();
 
     return app.run();
+#endif
 }
