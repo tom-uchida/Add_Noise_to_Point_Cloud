@@ -8,8 +8,7 @@ Add the following three types of noises to point cloud
 ## Usage
 `./addNoise [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]`
 
-For example
-
+## For example
 `./addNoise [.ply] [.spbr] [0.1] [0.001] [-g]`
 
 1. Gaussian
