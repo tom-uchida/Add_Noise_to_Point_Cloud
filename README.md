@@ -12,9 +12,13 @@ Add the following three types of noises to point cloud
 `./addNoise [.ply] [.spbr] [0.1] [0.001] [-g]`
 
 argv[1] : Input file (.ply)
+
 argv[2] : Output file (.spbr)
+
 argv[3] : Ratio of adding noise
+
 argv[4] : Parameter specific to noise (sigma, lamda)
+
 argv[5] : Noise type
 
 ### 1. Gaussian
