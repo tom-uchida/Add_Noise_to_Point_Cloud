@@ -20,6 +20,7 @@
 #include "addNoise.h"
 #include "writeSPBR.h"
 #include "noise_option.h"
+#include "tinycolormap.h"
 
 #include <kvs/PolygonObject>
 #include <kvs/PointObject>
@@ -30,8 +31,9 @@
 #include <kvs/Coordinate> 
 #include <kvs/ColorMap>
 
-#define EXEC_VIA_SPBR
-//#define EXEC_VIA_KVS
+//#define EXEC_VIA_SPBR
+#define EXEC_VIA_KVS
+#define NOISE_INTENSITY
 
 const char OUT_FILE[] = "out_noised.spbr";
 
@@ -101,46 +103,60 @@ int main( int argc, char** argv ) {
     std::vector<bool> is_noise_points = an->getIsNoisePoints();
 
     // ----- Get noise intensity -----
-    // std::vector<float> noise_intensities = an->getNoiseIntensities();
+#ifdef NOISE_INTENSITY
+    // const float max_noise_intensity = (float)an->getMaxNoiseIntensity();
+    // const float min_noise_intensity = (float)an->getMinNoiseIntensity();
+    an->normalizeNoiseIntensities();
+    const std::vector<float> normalized_noise_intensities = an->getNoiseIntensities();
+#endif
 
-    // ----- ColorMap -----
-    // float max_noise_intensity = (float)an->getMaxNoiseIntensity();
-    // float min_noise_intensity = (float)an->getMinNoiseIntensity();
     //kvs::ColorMap cmap( 256, min_noise_intensity, max_noise_intensity );
     // kvs::ColorMap cmap( 256, 0.0, max_noise_intensity );
     // cmap.create();
 
-    std::vector<unsigned char> colors;
-    kvs::RGBColor white(255, 255, 255);
-    kvs::RGBColor red(255, 0, 0);
+    // ----- Apply color -----
+    std::vector<unsigned char>  colors;
+    kvs::ValueArray<kvs::UInt8> original_colors = ply->colors();
+    kvs::RGBColor white(255, 255, 255), red(255, 0, 0), black(0, 0, 0);
     for ( size_t i = 0; i < ply->numberOfVertices(); i++ ) {
-        // noise point( = red )
+#ifdef NOISE_INTENSITY
+        // not noised points (white)
+        if ( !is_noise_points[i] ) {
+            // colors.push_back( white.r() );
+            // colors.push_back( white.g() );
+            // colors.push_back( white.b() );
+            colors.push_back( original_colors[3*i]);
+            colors.push_back( original_colors[3*i+1] );
+            colors.push_back( original_colors[3*i+2] );
+
+
+        // noised points (colormap)
+        } else {
+            // ----- Get the mapped color -----
+            tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Viridis);
+            //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Jet);
+            //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Heat);
+            colors.push_back( color.r()*255 );
+            colors.push_back( color.g()*255 );
+            colors.push_back( color.b()*255 );
+        }
+#endif
+
+#ifndef NOISE_INTENSITY
+        // noise points
         if ( is_noise_points[i] ) {
             colors.push_back( red.r() );
             colors.push_back( red.g() );
             colors.push_back( red.b() );
 
+        // not noised points
         } else {
             colors.push_back( white.r() );
             colors.push_back( white.g() );
             colors.push_back( white.b() );
         }
+#endif
     }
-    // for ( size_t i = 0; i < ply->numberOfVertices(); i++ ) {
-    //     // white
-    //     if ( noise_intensities[i] == 0.0 ) {
-    //         colors.push_back( white.r() );
-    //         colors.push_back( white.g() );
-    //         colors.push_back( white.b() );
-
-    //     // color map
-    //     } else {
-    //         kvs::RGBColor color( cmap.at( noise_intensities[i] ) );
-    //         colors.push_back( color.r() );
-    //         colors.push_back( color.g() );
-    //         colors.push_back( color.b() );
-    //     }
-    // }
     ply->setColors( kvs::ValueArray<kvs::UInt8>( colors ) );
 
     // ----- Write .spbr file -----
@@ -176,13 +192,15 @@ int main( int argc, char** argv ) {
     renderer->enableTwoSideLighting(); 
     screen.setTitle( "Point Object" );
     
-    kvs::Vector3f cam_pos(0, 10, 0);
+    kvs::Vector3f cam_pos(0, 7, 0);
     kvs::Vector3f cam_up(0, 0, 1);
     
-    screen.setBackgroundColor( kvs::RGBColor(0, 0, 0) );
+    //screen.setBackgroundColor( kvs::RGBColor(0, 0, 0) );
+    screen.setBackgroundColor( kvs::RGBColor(255, 255, 255) );
+    screen.setGeometry(0, 0, 900, 900);
     screen.scene()->camera()->setPosition(cam_pos);
     screen.scene()->camera()->setUpVector(cam_up);
-    screen.registerObject( object, renderer);
+    screen.registerObject(object, renderer);
     screen.show();
 
     return app.run();

@@ -26,6 +26,7 @@ public:
     std::vector<float> getNoiseIntensities( void ) { return m_noise_intensities; }
     double getMaxNoiseIntensity( void ) { return m_max_noise_intensity; }
     double getMinNoiseIntensity( void ) { return m_min_noise_intensity; }
+    void normalizeNoiseIntensities( void );
 
 private:
     NoiseType           m_type;

@@ -6,7 +6,7 @@
 #include <pcl/kdtree/kdtree_flann.h> 
 #include <kvs/BoxMuller> 
 #include <kvs/MersenneTwister>
-#include <random>   // for poisson distribution
+#include <random> // for poisson distribution
 #include <fstream>
 
 
@@ -55,9 +55,9 @@ void AddNoise::setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vec
 
 void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
     // Start time count
-    std::cout << "\n\n=======================" << std::endl;
-    std::cout << "===== Clock_start =====" << std::endl;
-    std::cout << "=======================" << std::endl;
+    std::cout << "\n\n=================================" << std::endl;
+    std::cout << "========== Clock Start ==========" << std::endl;
+    std::cout << "=================================" << std::endl;
     clock_t start = clock();
 
 
@@ -86,9 +86,9 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
 
     // End time count
     clock_t end = clock();
-    std::cout << "\n\n===========================" << std::endl;
-    std::cout << "===== Time : " <<(double)(end - start) / CLOCKS_PER_SEC << " =====" << std::endl;
-    std::cout << "===========================" << std::endl;
+    std::cout << "\n\n=====================================" << std::endl;
+    std::cout << "========== Time : " <<(double)(end - start) / CLOCKS_PER_SEC << " ==========" << std::endl;
+    std::cout << "=====================================" << std::endl;
 }
 
 void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
@@ -106,7 +106,7 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
     std::cout << "\n\nNumber of points" << std::endl;
     std::cout << "> " << m_number                   << std::endl;
 
-    std::cout << "\n\n==============================================" << std::endl;
+    std::cout << "\n==============================================" << std::endl;
     std::cout << "     Add Gaussian noise with " << m_ratio_of_adding_noise*100 << " percent."    << std::endl;
     std::cout << "==============================================" << std::endl;
 
@@ -143,9 +143,9 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
             y += y_noise;
             z += z_noise;
 
-            // Calc noise intensity
-            kvs::Vector3f distance  = noised_point - origin_point;
-            float noise_intensity   = distance.length();
+            // Calculate noise intensity
+            kvs::Vector3f distance = noised_point - origin_point;
+            float noise_intensity  = distance.length();
             m_noise_intensities.push_back(noise_intensity);
 
             // Update max & min noise intensity
@@ -198,11 +198,13 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
     std::cout << "\n\nNumber of points" << std::endl;
     std::cout << "> " << m_number                   << std::endl;
 
-    std::cout << "\n\n==============================================" << std::endl;
+    std::cout << "\n==============================================" << std::endl;
     std::cout << "     Apply Poisson noise with " << m_ratio_of_adding_noise*100 << " percent."    << std::endl;
     std::cout << "==============================================" << std::endl;
 
-    float scale = m_lamda;
+    float scale       = m_lamda;
+    float tmp_max     = 0.0f;
+    float tmp_min     = 1.0e3;
     int noise_counter = 0;
     // coords[]（KVS） → pcl::PointXYZ(x,y,z)（PCL）
     for ( size_t i = 0; i < num; i++ ) {
@@ -220,6 +222,8 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
 
         // Apply Poisson noise
         if ( uniRand() < m_ratio_of_adding_noise ) {
+            kvs::Vector3f origin_point(x, y, z);
+
             // P(λ)
             if ( uniRand() < 0.5 )  x += poissonRand(gen)*scale;
             else                    x -= poissonRand(gen)*scale;
@@ -230,11 +234,23 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
             if ( uniRand() < 0.5 )  z += poissonRand(gen)*scale;
             else                    z -= poissonRand(gen)*scale;
 
+            kvs::Vector3f noised_point(x, y, z);
+
+            // Calculate noise intensity
+            kvs::Vector3f distance = noised_point - origin_point;
+            float noise_intensity  = distance.length();
+            m_noise_intensities.push_back(noise_intensity);
+
+            // Update max & min noise intensity
+            if( tmp_max < noise_intensity ) tmp_max = noise_intensity;
+            if( tmp_min > noise_intensity ) tmp_min = noise_intensity;
+
             noise_counter++;
             m_is_noise_points.push_back( true );
 
         } else {
             m_is_noise_points.push_back( false );
+            m_noise_intensities.push_back( 0.0f );
         }
       
         // After applying noise
@@ -244,6 +260,14 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
         points.push_back( pcl::PointXYZ( x, y, z ) );
         _ply->setCoords( coords );     
     }
+
+    // Save max & min noise intensity
+    m_max_noise_intensity = tmp_max;
+    m_min_noise_intensity = tmp_min;
+    std::cout << "\nMax noise intensity" << std::endl;
+    std::cout << "> " << m_max_noise_intensity << std::endl;
+    std::cout << "\nMin noise intensity" << std::endl;
+    std::cout << "> " << m_min_noise_intensity << std::endl;
 
     std::cout << "\nNumber of noised points" << std::endl;
     std::cout << "> " << noise_counter       << std::endl;
@@ -263,7 +287,7 @@ void AddNoise::addSpikeNoise( kvs::PolygonObject* _ply ) {
     std::cout << "\n\nNumber of points" << std::endl;
     std::cout << "> " << m_number                   << std::endl;
 
-    std::cout << "\n\n============================================" << std::endl;
+    std::cout << "\n============================================" << std::endl;
     std::cout << "     Add Spike noise with " << m_ratio_of_adding_noise*100 << " percent."    << std::endl;
     std::cout << "============================================" << std::endl;
 
@@ -275,6 +299,8 @@ void AddNoise::addSpikeNoise( kvs::PolygonObject* _ply ) {
     float z_BB = max_BB.z() - min_BB.z();
 
     std::ofstream fout_spike_noise_point("spike_noise_point.txt");
+    float tmp_max     = 0.0f;
+    float tmp_min     = 1.0e3;
     int noise_counter = 0;
     // coords[]（KVS） → pcl::PointXYZ(x,y,z)（PCL）
     for ( size_t i = 0; i < num; i++ ) {
@@ -292,19 +318,33 @@ void AddNoise::addSpikeNoise( kvs::PolygonObject* _ply ) {
 
         // Add Spike noise
         if ( uniRand() < m_ratio_of_adding_noise ) {
+            kvs::Vector3f origin_point(x, y, z);
+
             // Random 3D point in Bounding Box
             x = x_BB*uniRand() + min_BB.x(); // x coord is a random number [min_BB.x, max_BB.x]
             y = y_BB*uniRand() + min_BB.y(); // y coord is a random number [min_BB.y, max_BB.y]
             z = z_BB*uniRand() + min_BB.z(); // z coord is a random number [min_BB.z, max_BB.z]
 
+            kvs::Vector3f noised_point(x, y, z);
+
             // write to .txt file
-            fout_spike_noise_point << x << " " << y << " " << z << std::endl;
+            //fout_spike_noise_point << x << " " << y << " " << z << std::endl;
+
+            // Calculate noise intensity
+            kvs::Vector3f distance = noised_point - origin_point;
+            float noise_intensity  = distance.length();
+            m_noise_intensities.push_back(noise_intensity);
+
+            // Update max & min noise intensity
+            if( tmp_max < noise_intensity ) tmp_max = noise_intensity;
+            if( tmp_min > noise_intensity ) tmp_min = noise_intensity;
             
             noise_counter++;
             m_is_noise_points.push_back( true );
 
         } else {
             m_is_noise_points.push_back( false );
+            m_noise_intensities.push_back( 0.0f );
         }
       
         // After adding noise
@@ -315,6 +355,23 @@ void AddNoise::addSpikeNoise( kvs::PolygonObject* _ply ) {
         _ply->setCoords( coords );     
     }
 
+    // Save max & min noise intensity
+    m_max_noise_intensity = tmp_max;
+    m_min_noise_intensity = tmp_min;
+    std::cout << "\nMax noise intensity" << std::endl;
+    std::cout << "> " << m_max_noise_intensity << std::endl;
+    std::cout << "\nMin noise intensity" << std::endl;
+    std::cout << "> " << m_min_noise_intensity << std::endl;
+
     std::cout << "\nNumber of noised points" << std::endl;
     std::cout << "> " << noise_counter       << std::endl;
+}
+
+void AddNoise::normalizeNoiseIntensities() {
+    for (int i = 0; i < m_noise_intensities.size(); i++)
+        m_noise_intensities[i] = m_noise_intensities[i] / m_max_noise_intensity;
+
+    // double max = *max_element( m_noise_intensities.begin(), m_noise_intensities.end() );
+    // double min = *min_element( m_noise_intensities.begin(), m_noise_intensities.end() );
+    // std::cout << max << "," << min << std::endl;
 }
