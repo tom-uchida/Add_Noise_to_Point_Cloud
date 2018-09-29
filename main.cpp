@@ -133,12 +133,15 @@ int main( int argc, char** argv ) {
         // noised points (colormap)
         } else {
             // ----- Get the mapped color -----
-            tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Viridis);
-            //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Jet);
+            //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Viridis);
+            tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Jet);
             //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Heat);
-            colors.push_back( color.r()*255 );
-            colors.push_back( color.g()*255 );
-            colors.push_back( color.b()*255 );
+            // colors.push_back( color.r()*255 );
+            // colors.push_back( color.g()*255 );
+            // colors.push_back( color.b()*255 );
+            colors.push_back( original_colors[3*i]);
+            colors.push_back( original_colors[3*i+1] );
+            colors.push_back( original_colors[3*i+2] );
         }
 #endif
 
@@ -192,11 +195,11 @@ int main( int argc, char** argv ) {
     renderer->enableTwoSideLighting(); 
     screen.setTitle( "Point Object" );
     
-    kvs::Vector3f cam_pos(0, 7, 0);
+    kvs::Vector3f cam_pos(0, 8, 0);
     kvs::Vector3f cam_up(0, 0, 1);
     
-    //screen.setBackgroundColor( kvs::RGBColor(0, 0, 0) );
-    screen.setBackgroundColor( kvs::RGBColor(255, 255, 255) );
+    screen.setBackgroundColor( kvs::RGBColor(0, 0, 0) );
+    //screen.setBackgroundColor( kvs::RGBColor(255, 255, 255) );
     screen.setGeometry(0, 0, 900, 900);
     screen.scene()->camera()->setPosition(cam_pos);
     screen.scene()->camera()->setUpVector(cam_up);
