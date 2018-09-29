@@ -6,3 +6,5 @@ Makefile.kvs
 *.spbr
 *.txt
 DOC/
+IMAGE_DATA/
+SPBR_DATA/
