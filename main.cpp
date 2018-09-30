@@ -133,15 +133,15 @@ int main( int argc, char** argv ) {
         // noised points (colormap)
         } else {
             // ----- Get the mapped color -----
-            //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Viridis);
-            tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Jet);
+            tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Viridis);
+            //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Jet);
             //tinycolormap::Color color = tinycolormap::GetColor(normalized_noise_intensities[i], tinycolormap::ColormapType::Heat);
-            // colors.push_back( color.r()*255 );
-            // colors.push_back( color.g()*255 );
-            // colors.push_back( color.b()*255 );
-            colors.push_back( original_colors[3*i]);
-            colors.push_back( original_colors[3*i+1] );
-            colors.push_back( original_colors[3*i+2] );
+            colors.push_back( color.r()*255 );
+            colors.push_back( color.g()*255 );
+            colors.push_back( color.b()*255 );
+            // colors.push_back( original_colors[3*i]);
+            // colors.push_back( original_colors[3*i+1] );
+            // colors.push_back( original_colors[3*i+2] );
         }
 #endif
 
