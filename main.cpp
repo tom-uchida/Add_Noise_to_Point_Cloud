@@ -31,11 +31,11 @@
 #include <kvs/Coordinate> 
 #include <kvs/ColorMap>
 
-//#define EXEC_VIA_SPBR
-#define EXEC_VIA_KVS
-#define NOISE_INTENSITY
+#define EXEC_VIA_SPBR
+//#define EXEC_VIA_KVS
+//#define NOISE_INTENSITY
 
-const char OUT_FILE[] = "out_noised.spbr";
+const char OUT_FILE[] = "SPBR_DATA/out_noised.spbr";
 
 int main( int argc, char** argv ) {
     char outSPBRfile[512];

@@ -31,7 +31,7 @@ public:
 private:
     NoiseType           m_type;
     size_t	            m_number;
-    double	            m_sigma;
+    double	            m_sigma2;
     double              m_lamda;
     double	            m_ratio_of_adding_noise;
     double              m_param_spec_to_noise;

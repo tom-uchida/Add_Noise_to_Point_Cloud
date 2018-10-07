@@ -13,14 +13,14 @@
 AddNoise::AddNoise( void ): 
     m_type( Gaussian ),
     m_number( 0 ),
-    m_sigma( 0.0 ),
+    m_sigma2( 0.0 ),
     m_ratio_of_adding_noise( 0.0 ),
     m_param_spec_to_noise( 0.0 )
 {}
 
 AddNoise::AddNoise( double _ratio_of_adding_noise, double _param_spec_to_noise): 
     m_number( 0 ),
-    m_sigma( 0.0 ),
+    m_sigma2( 0.0 ),
     m_ratio_of_adding_noise( _ratio_of_adding_noise ),
     m_param_spec_to_noise( _param_spec_to_noise )
 {}
@@ -32,13 +32,15 @@ void AddNoise::setNoiseType( NoiseType _type ) {
 void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax  ) {
     kvs::Vector3f diagonal_vector   = _bbmax - _bbmin;
     double diagonal_length          = diagonal_vector.length();
-    m_sigma                         = diagonal_length * _ratio_for_sigma; // Calc sigma
+    m_sigma2                        = diagonal_length * _ratio_for_sigma; // Calc sigma
 
     std::cout << "\n\n----- Calc. sigma -----"      << std::endl;
     std::cout << "Diagonal length"                  << std::endl;
     std::cout << "> " << diagonal_length << "\n"    << std::endl;
+    std::cout << "Sigma2(Dispersion)"               << std::endl;
+    std::cout << "> " << m_sigma2 << " ( = " << diagonal_length << " * " << _ratio_for_sigma << "(argv[4]) )" << std::endl;
     std::cout << "Sigma(standard deviation)"        << std::endl;
-    std::cout << "> " << m_sigma << " ( = " << diagonal_length << " * " << _ratio_for_sigma << "(argv[4]) )" << std::endl;
+    std::cout << "> " << sqrt(m_sigma2)             << std::endl;
 }
 
 void AddNoise::setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax  ) {
@@ -120,7 +122,7 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
         float z  = coords[3*i+2];
         float nx = 0.0;
         float ny = 0.0;
-        float nz = 0.0; 
+        float nz = 0.0;
         if ( hasNormal ) {
             nx = normals[3*i];
             ny = normals[3*i+1];
@@ -131,9 +133,9 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
         if ( uniRand() < m_ratio_of_adding_noise ) {
             // N(μ, σ^2)
             // Generate Gaussian noise
-            float x_noise = gaussRand.rand(0.0, m_sigma*m_sigma);
-            float y_noise = gaussRand.rand(0.0, m_sigma*m_sigma);
-            float z_noise = gaussRand.rand(0.0, m_sigma*m_sigma);
+            float x_noise = gaussRand.rand(0.0, m_sigma2);
+            float y_noise = gaussRand.rand(0.0, m_sigma2);
+            float z_noise = gaussRand.rand(0.0, m_sigma2);
 
             kvs::Vector3f origin_point(x, y, z);
             kvs::Vector3f noised_point(x+x_noise, y+y_noise, z+z_noise);
