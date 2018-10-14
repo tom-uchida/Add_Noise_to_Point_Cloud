@@ -33,7 +33,7 @@
 
 #define EXEC_VIA_SPBR
 //#define EXEC_VIA_KVS
-//#define NOISE_INTENSITY
+#define NOISE_INTENSITY
 
 const char OUT_FILE[] = "SPBR_DATA/out_noised.spbr";
 

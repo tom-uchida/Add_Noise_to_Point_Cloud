@@ -185,8 +185,10 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
 
 void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
     std::vector<pcl::PointXYZ>      points;
-    std::random_device              rd;
-    std::mt19937                    gen(rd());
+    // std::random_device              rd;
+    // std::mt19937                    gen(rd());
+    std::random_device              seed_gen;
+    std::default_random_engine      engine(seed_gen());
     std::poisson_distribution<>     poissonRand(m_lamda);
     kvs::MersenneTwister            uniRand;
 
@@ -227,14 +229,14 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
             kvs::Vector3f origin_point(x, y, z);
 
             // P(λ)
-            if ( uniRand() < 0.5 )  x += poissonRand(gen)*scale;
-            else                    x -= poissonRand(gen)*scale;
+            if ( uniRand() < 0.5 )  x += poissonRand(engine)*scale;
+            else                    x -= poissonRand(engine)*scale;
             
-            if ( uniRand() < 0.5 )  y += poissonRand(gen)*scale;
-            else                    y -= poissonRand(gen)*scale;
+            if ( uniRand() < 0.5 )  y += poissonRand(engine)*scale;
+            else                    y -= poissonRand(engine)*scale;
 
-            if ( uniRand() < 0.5 )  z += poissonRand(gen)*scale;
-            else                    z -= poissonRand(gen)*scale;
+            if ( uniRand() < 0.5 )  z += poissonRand(engine)*scale;
+            else                    z -= poissonRand(engine)*scale;
 
             kvs::Vector3f noised_point(x, y, z);
 
