@@ -33,9 +33,9 @@ void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vec
     kvs::Vector3f diagonal_vector   = _bbmax - _bbmin;
     double diagonal_length          = diagonal_vector.length();
     //m_sigma2                        = diagonal_length*diagonal_length * _ratio_for_sigma; // Calc sigma
-    //m_sigma2 = 1024 * _ratio_for_sigma; // 1024(pixel) * 1e-05
+    //m_sigma2 = 1000 * _ratio_for_sigma; // 1000(pixel) * 1e-05
     _ratio_for_sigma = 1e-05;
-    m_sigma2 = 1024*1024 * _ratio_for_sigma / 1024; // B^2 * p / 1024pixel
+    m_sigma2 = 1000*1000 * _ratio_for_sigma / 1000; // B^2 * p / 1000pixel
 
     std::cout << "\n\n----- Calc. sigma -----"      << std::endl;
     std::cout << "Diagonal length"                  << std::endl;
@@ -43,7 +43,7 @@ void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vec
     std::cout << "\nSigma2(Variance)"               << std::endl;
     // std::cout << "> " << m_sigma2 << " ( = " << diagonal_length*diagonal_length 
     //                                          << " * " << _ratio_for_sigma << "(argv[4]) )" << std::endl;
-    std::cout << "> " << m_sigma2 << " ( = 1024*1024(B^2) * 10^-5(parameter)(argv[4]) / 1024)" << std::endl;
+    std::cout << "> " << m_sigma2 << " ( = 1000*1000(B^2) * 10^-5(parameter)(argv[4]) / 1000)" << std::endl;
     std::cout << "\nSigma(Standard Deviation)"      << std::endl;
     std::cout << "> " << sqrt(m_sigma2)             << std::endl;
 }
