@@ -7,7 +7,7 @@
 
 // [For example]
 // $ ./addNoise input.ply output.spbr 0.1 0.001 -g
-// > Gaussian : sigma = b_leng * 0.001
+// > Gaussian : sigma = b_leng^2 * 0.001
 // > Poisson  : lamda = b_leng * 0.001
 // > Spike    : none
 // > Add noise with (0.1*100=)10 percent.
@@ -42,10 +42,10 @@ int main( int argc, char** argv ) {
     strcpy( outSPBRfile, OUT_FILE ); 
 
     if ( argc != 6 ) {
-        std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise]\n"
+        std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
                   << "\n----- For example -----\n" 
                   << "$ " << argv[0] << " input.ply output.xyz 0.1 0.001\n"
-                  << "> Gaussian : sigma = b_leng * 0.001\n"
+                  << "> Gaussian : sigma = b_leng^2 * 0.001\n"
                   << "> Poisson  : lamda = b_leng * 0.001\n"
                   << "> Spike    : none\n"
                   << "> Add noise with (0.1*100=)10 percent.\n"
@@ -56,7 +56,7 @@ int main( int argc, char** argv ) {
         strcpy( outSPBRfile, argv[2] );
     }
     
-    // ----- Import "point cloud data（argv[1]）" that user decided
+    // ----- Import "point cloud data（.ply, argv[1]）" that user selected
     // ----- Inheritance of KVS::PolygonObject -----
     ImportPointClouds *ply = new ImportPointClouds( argv[1] );
     ply->updateMinMaxCoords();
