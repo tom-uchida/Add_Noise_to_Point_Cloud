@@ -35,7 +35,7 @@ void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vec
     //m_sigma2                        = diagonal_length*diagonal_length * _ratio_for_sigma; // Calc sigma
     //m_sigma2 = 1024 * _ratio_for_sigma; // 1024(pixel) * 1e-05
     _ratio_for_sigma = 1e-05;
-    m_sigma2 = 1024*1024 * _ratio_for_sigma / 1024; // B^2 * p / 1024pixel
+    m_sigma2 = 1000*1000 * _ratio_for_sigma / 1000; // B^2 * p / 1024pixel
 
     std::cout << "\n\n----- Calc. sigma -----"      << std::endl;
     std::cout << "Diagonal length"                  << std::endl;
@@ -110,7 +110,7 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
     if ( num == _ply->numberOfNormals() ) hasNormal = true;
 
     std::cout << "\n\nNumber of points" << std::endl;
-    std::cout << "> " << m_number                   << std::endl;
+    std::cout << "> " << m_number       << std::endl;
 
     std::cout << "\n==============================================" << std::endl;
     std::cout << "     Add Gaussian noise with " << m_ratio_of_adding_noise*100 << " percent."    << std::endl;

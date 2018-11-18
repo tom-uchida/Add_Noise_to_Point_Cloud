@@ -200,7 +200,7 @@ int main( int argc, char** argv ) {
     
     screen.setBackgroundColor( kvs::RGBColor(0, 0, 0) );
     //screen.setBackgroundColor( kvs::RGBColor(255, 255, 255) );
-    screen.setGeometry(0, 0, 900, 900);
+    screen.setGeometry(0, 0, 1000, 1000);
     screen.scene()->camera()->setPosition(cam_pos);
     screen.scene()->camera()->setUpVector(cam_up);
     screen.registerObject(object, renderer);
