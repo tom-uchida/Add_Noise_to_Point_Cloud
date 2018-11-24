@@ -36,6 +36,8 @@ void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vec
     //m_sigma2 = 1024 * _ratio_for_sigma; // 1024(pixel) * 1e-05
     _ratio_for_sigma = 1e-05;
     m_sigma2 = 1000*1000 * _ratio_for_sigma / 1000; // B^2 * p / 1024pixel
+    //m_sigma2 = 0.01;
+    m_sigma2 = 0.1;
 
     std::cout << "\n\n----- Calc. sigma -----"      << std::endl;
     std::cout << "Diagonal length"                  << std::endl;
