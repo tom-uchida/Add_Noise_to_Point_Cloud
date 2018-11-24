@@ -42,12 +42,15 @@ private:
     double              m_min_noise_intensity;
 
 private:
+    // Gaussian
     void setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
     void addGaussianNoise( kvs::PolygonObject* _ply );
 
+    // Poisson
     void setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
     void applyPoissonNoise( kvs::PolygonObject* _ply );
 
+    // Spike
     void addSpikeNoise( kvs::PolygonObject* _ply );    
 };
 

@@ -7,8 +7,8 @@
 
 // [For example]
 // $ ./addNoise input.ply output.spbr 0.1 0.001 -g
-// > Gaussian : sigma = b_leng^2 * 0.001
-// > Poisson  : lamda = b_leng * 0.001
+// > Gaussian : sigma2 = 0.001
+// > Poisson  : lamda  = b_leng * 0.001
 // > Spike    : none
 // > Add noise with (0.1*100=)10 percent.
 
