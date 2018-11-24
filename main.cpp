@@ -31,9 +31,11 @@
 #include <kvs/Coordinate> 
 #include <kvs/ColorMap>
 
-#define EXEC_VIA_SPBR
-//#define EXEC_VIA_KVS
-#define NOISE_INTENSITY
+//#define EXEC_VIA_SPBR
+#define EXEC_VIA_KVS
+#define NOISE_ORIGINAL_COLOR
+//#define NOISE_INTENSITY
+//#define NOISE_ARTIFICIAL_PLANE
 
 const char OUT_FILE[] = "SPBR_DATA/out_noised.spbr";
 
@@ -44,11 +46,11 @@ int main( int argc, char** argv ) {
     if ( argc != 6 ) {
         std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
                   << "\n----- For example -----\n" 
-                  << "$ " << argv[0] << " input.ply output.xyz 0.1 0.001\n"
+                  << "$ " << argv[0] << " input.ply output.spbr 0.1 0.001\n"
                   << "> Gaussian : sigma = b_leng^2 * 0.001\n"
-                  << "> Poisson  : lamda = b_leng * 0.001\n"
+                  << "> Poisson  : lamda = b_leng   * 0.001\n"
                   << "> Spike    : none\n"
-                  << "> Add noise with (0.1*100=)10 percent.\n"
+                  << "> Add noise with 10(=argv[3]*100) percent.\n"
                   << std::endl;
         exit(1);
 
@@ -145,19 +147,25 @@ int main( int argc, char** argv ) {
         }
 #endif
 
-#ifndef NOISE_INTENSITY
-        // noise points
+#ifdef NOISE_ARTIFICIAL_PLANE
+        // Noise points(red)
         if ( is_noise_points[i] ) {
             colors.push_back( red.r() );
             colors.push_back( red.g() );
             colors.push_back( red.b() );
 
-        // not noised points
+        // Not noised points(white)
         } else {
             colors.push_back( white.r() );
             colors.push_back( white.g() );
             colors.push_back( white.b() );
         }
+#endif
+
+#ifdef NOISE_ORIGINAL_COLOR
+        colors.push_back( original_colors[3*i]);
+        colors.push_back( original_colors[3*i+1] );
+        colors.push_back( original_colors[3*i+2] );
 #endif
     }
     ply->setColors( kvs::ValueArray<kvs::UInt8>( colors ) );
