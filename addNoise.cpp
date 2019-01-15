@@ -44,7 +44,8 @@ void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vec
     std::cout << "\nSigma2(Variance)"               << std::endl;
     // std::cout << "> " << m_sigma2 << " ( = " << diagonal_length*diagonal_length 
     //                                          << " * " << _ratio_for_sigma << "(argv[4]) )" << std::endl;
-    std::cout << "> " << m_sigma2 << " ( = 1024*1024(B^2) * 10^-5(parameter)(argv[4]) / 1024)" << std::endl;
+    // std::cout << "> " << m_sigma2 << " ( = 1024*1024(B^2) * 10^-5(parameter)(argv[4]) / 1024)" << std::endl;
+    std::cout << "> " << m_sigma2                   << std::endl;
     std::cout << "\nSigma(Standard Deviation)"      << std::endl;
     std::cout << "> " << sqrt(m_sigma2)             << std::endl;
 }
@@ -89,7 +90,6 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
     } else if ( m_type == Spike ) {
         addSpikeNoise( _ply );
     }
-
 
     // End time count
     clock_t end = clock();
