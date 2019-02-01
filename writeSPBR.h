@@ -62,8 +62,8 @@ void writeSPBR(  kvs::PolygonObject *_ply,
         float ny = NORMAL[1];
         float nz = NORMAL[2];
         if ( hasNormal ) {
-            nx = normals[ 3*i ];
-            ny = normals[ 3*i+1 ];
+            nx = normals[ 3*i  ];
+            ny = normals[ 3*i+1];
             nz = normals[ 3*i+2];
         }
 

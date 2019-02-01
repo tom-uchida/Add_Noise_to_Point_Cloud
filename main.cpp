@@ -31,11 +31,11 @@
 #include <kvs/Coordinate> 
 #include <kvs/ColorMap>
 
-//#define EXEC_VIA_SPBR
-#define EXEC_VIA_KVS
-#define NOISE_ORIGINAL_COLOR
+#define EXEC_VIA_SPBR
+//#define EXEC_VIA_KVS
+//#define NOISE_ORIGINAL_COLOR
 //#define NOISE_INTENSITY
-//#define NOISE_ARTIFICIAL_PLANE
+#define NOISE_ARTIFICIAL_PLANE
 
 const char OUT_FILE[] = "SPBR_DATA/out_noised.spbr";
 
@@ -187,7 +187,7 @@ int main( int argc, char** argv ) {
     // ----- Exec. SPBR -----
 #ifdef EXEC_VIA_SPBR
     std::string out_noised_spbr( outSPBRfile );
-    std::string EXEC("./spbr ");
+    std::string EXEC("spbr ");
     EXEC += out_noised_spbr;
     system( EXEC.c_str() );
 
