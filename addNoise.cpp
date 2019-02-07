@@ -175,7 +175,7 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
         coords[3*i+1]   = y;
         coords[3*i+2]   = z;
         points.push_back( pcl::PointXYZ( x, y, z ) );
-        _ply->setCoords( coords );     
+        _ply->setCoords( coords );
     }
 
     // Save max & min noise intensity
