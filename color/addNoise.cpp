@@ -11,7 +11,7 @@
 
 
 AddNoise::AddNoise( void ): 
-    m_type( Gaussian ),
+    m_noise_type( Gaussian ),
     m_number( 0 ),
     m_sigma2( 0.0 ),
     m_ratio_of_adding_noise( 0.0 ),
@@ -26,7 +26,7 @@ AddNoise::AddNoise( double _ratio_of_adding_noise, double _param_spec_to_noise):
 {}
 
 void AddNoise::setNoiseType( NoiseType _type ) {
-    m_type = _type;
+    m_noise_type = _type;
 }
 
 void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax  ) {
@@ -64,7 +64,7 @@ void AddNoise::setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vec
     std::cout << "> " << m_lamda << " ( = " << diagonal_length*diagonal_length << " * " << _ratio_for_lamda << "(argv[4]) )" << std::endl;
 }
 
-void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
+void AddNoise::addNoise2Coords( kvs::PolygonObject* _ply ) {
     // Start time count
     std::cout << "\n\n=================================" << std::endl;
     std::cout << "========== Clock Start ==========" << std::endl;
@@ -75,21 +75,21 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
     // ----- Add noise -----
     // ---------------------
     // Gaussian Noise
-    if ( m_type == Gaussian ) {
+    if ( m_noise_type == Gaussian ) {
         setSigma(  /* ratio4sigma  */ m_param_spec_to_noise, 
                    /* BBmin        */ _ply->minObjectCoord(), 
                    /* BBmax        */ _ply->maxObjectCoord() );
         addGaussianNoise( _ply );
         
     // Poisson Noise
-    } else if ( m_type == Poisson ) {
+    } else if ( m_noise_type == Poisson ) {
         setLamda(  /* ratio4sigma  */ m_param_spec_to_noise, 
                    /* BBmin        */ _ply->minObjectCoord(), 
                    /* BBmax        */ _ply->maxObjectCoord() );
         applyPoissonNoise( _ply );
         
     // Spike Noise
-    } else if ( m_type == Spike ) {
+    } else if ( m_noise_type == Spike ) {
         addSpikeNoise( _ply );
     }
 
@@ -98,6 +98,19 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
     std::cout << "\n\n=====================================" << std::endl;
     std::cout << "========== Time : " <<(double)(end - start) / CLOCKS_PER_SEC << " ==========" << std::endl;
     std::cout << "=====================================" << std::endl;
+}
+
+void AddNoise::addNoise2Color( kvs::PolygonObject* _ply ) {
+    // Set sigma(=standard deviation)
+    m_sigma2 = std::pow(m_param_spec_to_noise, 2.0);
+
+    std::cout << "\nAbout Gaussian noise" << std::endl;
+    std::cout << " - Noise probability  : " << m_ratio_of_adding_noise*100 << "(%)"<< std::endl;
+    std::cout << " - standard deviation : " << sqrt(m_sigma2) << std::endl;
+    std::cout << "\nAdding Gaussian noise..." << std::endl;
+    
+    // Add Gaussian noise to color of each point
+    addGaussianNoise2Color( _ply );
 }
 
 void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
@@ -169,7 +182,6 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
             m_noise_intensities.push_back( 0.0f );
         }
     
-      
         // After adding noise
         coords[3*i]     = x;
         coords[3*i+1]   = y;
@@ -188,7 +200,74 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
 
     std::cout << "\nNumber of noised points" << std::endl;
     std::cout << "> " << noise_counter       << std::endl;
-}
+} // End addGaussianNoise()
+
+void AddNoise::addGaussianNoise2Color( kvs::PolygonObject* _ply ) {
+    kvs::BoxMuller              gaussRand;
+    kvs::MersenneTwister        uniRand;
+
+    // std::vector<unsigned char>  colors;
+    kvs::ValueArray<kvs::UInt8> colors = _ply->colors();
+
+    m_number = _ply->numberOfVertices();
+    std::cout << "\nNumber of points : " << m_number << std::endl;
+
+    int noise_counter   = 0;
+    for ( size_t i = 0; i < m_number; i++ ) {
+        kvs::UInt8 r  = colors[3*i];
+        kvs::UInt8 g  = colors[3*i+1];
+        kvs::UInt8 b  = colors[3*i+2];
+
+        // Add Gaussian noise
+        if ( uniRand() < m_ratio_of_adding_noise ) {
+            if ( i < 100 ) {
+                std::cout << "R : " << +r << std::endl;
+                std::cout << "G : " << +g << std::endl;
+                std::cout << "B : " << +b << std::endl;
+            }
+
+            // N(μ, σ^2)
+            // Generate Gaussian noise
+            int r_noise = gaussRand.rand(r, m_sigma2);
+            int g_noise = gaussRand.rand(g, m_sigma2);
+            int b_noise = gaussRand.rand(b, m_sigma2);
+            if (r_noise < 0)    r_noise = 0;
+            if (r_noise > 255)  r_noise = 255;
+            if (g_noise < 0)    g_noise = 0;
+            if (g_noise > 255)  g_noise = 255;
+            if (b_noise < 0)    b_noise = 0;
+            if (b_noise > 255)  b_noise = 255;
+
+            if ( i < 100 ) {
+                std::cout << "R_noised : " << +r_noise << std::endl;
+                std::cout << "G_noised : " << +g_noise << std::endl;
+                std::cout << "B_noised : " << +b_noise << std::endl;
+                std::cout << std::endl;
+            }
+
+            // Add Gaussian noise
+            r = kvs::UInt8(r_noise);
+            g = kvs::UInt8(g_noise);
+            b = kvs::UInt8(b_noise);
+
+            noise_counter++;
+            m_is_noise_points.push_back( true );
+
+        } else {
+            m_is_noise_points.push_back( false );
+        }
+    
+        // Apply change
+        colors[3*i]     = r;
+        colors[3*i+1]   = g;
+        colors[3*i+2]   = b;
+    }
+
+    // Set color after adding Gaussian noise
+    _ply->setColors( kvs::ValueArray<kvs::UInt8>( colors ) );
+
+    std::cout << "\nNumber of noised points : " << noise_counter << std::endl;
+} // End addGaussianNoise2Color()
 
 void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
     std::vector<pcl::PointXYZ>      points;
@@ -263,7 +342,7 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
             m_is_noise_points.push_back( false );
             m_noise_intensities.push_back( 0.0f );
         }
-      
+
         // After applying noise
         coords[3*i]     = x;
         coords[3*i+1]   = y;
@@ -357,7 +436,7 @@ void AddNoise::addSpikeNoise( kvs::PolygonObject* _ply ) {
             m_is_noise_points.push_back( false );
             m_noise_intensities.push_back( 0.0f );
         }
-      
+
         // After adding noise
         coords[3*i]     = x;
         coords[3*i+1]   = y;
