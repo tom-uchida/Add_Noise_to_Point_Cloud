@@ -13,21 +13,11 @@
 
 ## Result
 ### Coordinate Noise
-#### Gaussian noise
-![coords_noise1](resources/gaussian_LR1.bmp)
-
-#### Poisson noise
-![coords_noise2](resources/spike_LR1.bmp)
-
-#### Spike noise
-![coords_noise3](resources/spike_LR1.bmp)
+|Gaussian|Poisson|Spike|
+|:-:|:-:|:-:|
+|![coords_noise1](resources/gaussian_LR1.bmp)|![coords_noise2](resources/poisson_LR1.bmp)|![coords_noise3](resources/spike_LR1.bmp)|
 
 ### Color Noise
-#### Original color
-![color_noise1](resources/funehoko_original_color.bmp)
-
-#### Noise color (sigma=5)
-![color_noise2](resources/100per_sigma5.bmp)
-
-#### Noise color (sigma=10)
-![color_noise3](resources/100per_sigma10.bmp)
+|Original color|sigma=5|sigma=10|
+|:-:|:-:|:-:|
+|![color_noise1](resources/funehoko_original_color.bmp)|![color_noise2](resources/100per_sigma5.bmp)|![color_noise3](resources/100per_sigma10.bmp)|
