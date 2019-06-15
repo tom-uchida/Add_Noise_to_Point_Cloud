@@ -1,59 +1,14 @@
 # Add_Noise_to_Point_Cloud
 ## Overview
-Add the following three types of noises to point cloud
-   - Gaussian
-   - Poisson
-   - Spike
+Add the Gaussian noise to color of each point
 
-## Usage
-`./addNoise [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]`
+### Usage
+`./addNoise2color [data_file] [output_file] [noise_ratio] [sigma(=standard deviation)]`
 
-## For example
-`./addNoise [.ply] [.spbr] [0.1] [0.01] [-g]`
+### For example
+`./addNoise input.ply output.spbr 0.1 5.0`
 
-argv[1] : Input file (.ply)
-
-argv[2] : Output file (.spbr)
-
-argv[3] : Ratio of adding noise
-
-argv[4] : Parameter specific to noise (sigma, lamda)
-
-argv[5] : Noise type
-
-### 1. Gaussian
-  - argv[3] : 0.1
-    - Add noise with 10 percent. (0.1*100)
-
-  - argv[4] : 0.01
-    - sigma2 = 0.01
-
-  - argv[5] : -g
-    - AddNoise::Gaussian
-
-  ![gaussian](resources/out_gaussian_RL1.bmp)
-
-
-### 2. Poisson
-  - argv[3] : 0.1
-    - Add noise with 10 percent. (0.1*100)
-
-  - argv[4] : 0.01
-    - lamda = BoundingBox_length * 0.01
-
-  - argv[5] : -p
-    - AddNoise::Poisson
-
-![poisson](resources/out_poisson_RL1.bmp)
-
-### 3. Spike
-  - argv[3] : 0.1
-    - Add noise with 10 percent. (0.1*100)
-
-  - argv[4] : 0.01
-    - none.
-
-  - argv[5] : -s
-    - AddNoise::Spike
-
-![spike](resources/out_spike_RL1.bmp)
+## Result
+|Original color|sigma=5|sigma=10|
+|:-:|:-:|:-:|
+|![color_noise1](sample_images/funehoko_original_color.bmp)|![color_noise2](sample_images/100per_sigma5.bmp)|![color_noise3](sample_images/100per_sigma10.bmp)|

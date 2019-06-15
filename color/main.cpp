@@ -6,7 +6,7 @@
 // ./addNoise2color [data_file] [output_file] [noise_ratio] [sigma(=standard deviation)]
 
 // EXAMPLE:
-// $ ./addNoise input.ply output.spbr 0.1 5.0
+// ./addNoise input.ply output.spbr 0.1 5.0
 
 #include <iostream>
 #include <cstring> 

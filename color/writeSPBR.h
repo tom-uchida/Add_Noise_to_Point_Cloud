@@ -106,7 +106,7 @@ void writeSPBR(  kvs::PolygonObject *_ply,
         }
 
         // Show progress
-        if ( (i+1) % (int(num)*0.1) == 0 ) {
+        if ( (i+1) % int(int(num)*0.1) == 0 ) {
             std::cout << i/(int)num*100 << "\% done." << std::endl;
         }
     }                                                    

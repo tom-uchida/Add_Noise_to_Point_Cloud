@@ -15,9 +15,9 @@
 ### Coordinate Noise
 |Gaussian|Poisson|Spike|
 |:-:|:-:|:-:|
-|![coords_noise1](resources/gaussian_LR1.bmp)|![coords_noise2](resources/poisson_LR1.bmp)|![coords_noise3](resources/spike_LR1.bmp)|
+|![coords_noise1](coords/sample_images/gaussian_LR1.bmp)|![coords_noise2](coords/sample_images/poisson_LR1.bmp)|![coords_noise3](coords/sample_images/spike_LR1.bmp)|
 
 ### Color Noise
 |Original color|sigma=5|sigma=10|
 |:-:|:-:|:-:|
-|![color_noise1](resources/funehoko_original_color.bmp)|![color_noise2](resources/100per_sigma5.bmp)|![color_noise3](resources/100per_sigma10.bmp)|
+|![color_noise1](color/sample_images/funehoko_original_color.bmp)|![color_noise2](color/sample_images/100per_sigma5.bmp)|![color_noise3](color/sample_images/100per_sigma10.bmp)|
