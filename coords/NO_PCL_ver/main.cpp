@@ -20,7 +20,6 @@
 #include "addNoise.h"
 #include "writeSPBR.h"
 #include "noise_option.h"
-#include "tinycolormap.h"
 
 #include <kvs/PolygonObject>
 #include <kvs/PointObject>
@@ -44,13 +43,9 @@ int main( int argc, char** argv ) {
     strcpy( outSPBRfile, OUT_FILE ); 
 
     if ( argc != 6 ) {
-        std::cout << "\n----- USAGE -----\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
-                  << "\n----- For example -----\n" 
-                  << "$ " << argv[0] << " input.ply output.spbr 0.1 0.001\n"
-                  << "> Gaussian : sigma = b_leng^2 * 0.001\n"
-                  << "> Poisson  : lamda = b_leng   * 0.001\n"
-                  << "> Spike    : none\n"
-                  << "> Add noise with 10(=argv[3]*100) percent.\n"
+        std::cout << "\nUSAGE:\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
+                  << "\nEXAMPLE:\n" 
+                  << "$ " << argv[0] << " input.ply output.spbr 0.1 0.001 -g\n"
                   << std::endl;
         exit(1);
 
