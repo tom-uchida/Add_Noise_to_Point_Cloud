@@ -1,6 +1,6 @@
 .vscode/
 
-coords/addNoise2coords
+coords/addNoise2coord
 coords/spbr
 coords/Makefile
 coords/Makefile.kvs

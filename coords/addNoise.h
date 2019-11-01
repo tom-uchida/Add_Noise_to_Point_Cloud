@@ -2,8 +2,8 @@
 #define _AddNoise_H__
 
 #include <kvs/PolygonObject>
-#include <pcl/point_cloud.h>
-#include <pcl/kdtree/kdtree_flann.h> 
+// #include <pcl/point_cloud.h>
+// #include <pcl/kdtree/kdtree_flann.h>
 #include <vector>
 
 class AddNoise {
@@ -12,7 +12,7 @@ public:
     enum NoiseType {
         Gaussian = 0,
         Poisson  = 1,
-        Spike    = 2
+        Outlier  = 2
     };
 
 public:
@@ -50,8 +50,8 @@ private:
     void setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
     void applyPoissonNoise( kvs::PolygonObject* _ply );
 
-    // Spike
-    void addSpikeNoise( kvs::PolygonObject* _ply );    
+    // Outlier
+    void addOutlierNoise( kvs::PolygonObject* _ply );    
 };
 
 #endif

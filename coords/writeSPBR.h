@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <cstdlib>
+#include <time.h>
 
 enum WritingDataType {
     Ascii = 0,
@@ -37,6 +38,8 @@ void writeSPBR(  kvs::PolygonObject *_ply,
     kvs::ValueArray<kvs::Real32>         normals     = _ply->normals();
     kvs::ValueArray<kvs::UInt8>          colors      = _ply->colors();
 
+    clock_t start = clock(); // Start time count
+    std::cout << "\nWriting spbr file..." << std::endl;
     std::ofstream fout( _filename );
     if ( _type == Ascii ) {
         fout << "#/SPBR_ASCII_Data"       << std::endl;
@@ -102,8 +105,11 @@ void writeSPBR(  kvs::PolygonObject *_ply,
 	             << r   << " " << g  << " " << b  << " " 
                  << std::endl;
                  //<< _ni[i] << std::endl; // noise intensity
-        }
-    }                                                                           
+        } // end if
+    } // end for
+
+    clock_t end = clock(); // End time count
+    std::cout << "Done! (" <<(double)(end - start) / CLOCKS_PER_SEC / 60 << " minute)" << std::endl;
 
     fout.close();
 }

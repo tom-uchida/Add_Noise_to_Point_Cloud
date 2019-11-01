@@ -33,24 +33,33 @@
 
 #define EXEC_VIA_SPBR
 //#define EXEC_VIA_KVS
-//#define NOISE_ORIGINAL_COLOR
+#define NOISE_ORIGINAL_COLOR
 //#define NOISE_INTENSITY
-#define NOISE_ARTIFICIAL_PLANE
+// #define NOISE_ARTIFICIAL_PLANE
 
 const char OUT_FILE[] = "SPBR_DATA/out_noised.spbr";
+
+void message() {
+    std::cout << std::endl;
+    std::cout << "===========================================" << std::endl;
+    std::cout << "     Add Noise to Coord of Point Cloud"      << std::endl;
+    std::cout << "             Tomomasa Uchida"                << std::endl;
+    std::cout << "               2019/11/01"                   << std::endl;
+    std::cout << "===========================================" << std::endl;
+}
 
 int main( int argc, char** argv ) {
     char outSPBRfile[512];
     strcpy( outSPBRfile, OUT_FILE ); 
 
     if ( argc != 6 ) {
-        std::cout << "\nUSAGE:\n" << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
-                  << "\nEXAMPLE:\n" 
+        std::cout << "\nUSAGE:  " << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
+                  << "EXAMPLE:" 
                   << "$ " << argv[0] << " input.ply output.spbr 0.1 0.001\n"
-                  << "> Gaussian : sigma2 = b_leng^2 * 0.001\n"
-                  << "> Poisson  : lamda  = b_leng   * 0.001\n"
-                  << "> Spike    : none\n"
-                  << "> Add noise with 10(=argv[3]*100) percent.\n"
+                  << "> Add noise with 10(=0.1*100) percent.\n"
+                  << "> - Gaussian : sigma2 = 0.001\n"
+                  << "> - Poisson  : lamda  = b_leng * 0.001\n"
+                  << "> - Outlier  : none\n"
                   << std::endl;
         exit(1);
 
@@ -62,34 +71,33 @@ int main( int argc, char** argv ) {
     // ----- Inheritance of KVS::PolygonObject -----
     ImportPointClouds *ply = new ImportPointClouds( argv[1] );
     ply->updateMinMaxCoords();
-    std::cout << "PLY Min, Max Coords:" << std::endl;
+    std::cout << "\nPLY Min, Max Coords:" << std::endl;
     std::cout << "Min : " << ply->minObjectCoord() << std::endl;
     std::cout << "Max : " << ply->maxObjectCoord() << std::endl;
+
+    message();
 
     // ----- Set up for adding noise -----
     AddNoise *an = new AddNoise( atof(argv[3]), atof(argv[4]) );
 
-    // ----- Apply noise type ( Gaussian or Poisson or Spike ) -----
+    // ----- Apply noise type ( Gaussian or Poisson or Outlier ) -----
     for ( int i = 1; i < argc; i++ ) {
         // Gaussian
         if ( !strncmp( GAUSSIAN_OPTION, argv[i], strlen( GAUSSIAN_OPTION ) ) ) {
             an->setNoiseType( AddNoise::Gaussian );
-            std::cout << "\n\nNoise Type"   << std::endl;
-            std::cout << "> Gaussian Noise" << std::endl;
+            std::cout << "\nNoise Type           : Gaussian noise"   << std::endl;
             i++;
 
         // Poisson
         } else if ( !strncmp( POISSON_OPTION, argv[i], strlen( POISSON_OPTION ) ) ) {
             an->setNoiseType( AddNoise::Poisson );
-            std::cout << "\n\nNoise Type"  << std::endl;
-            std::cout << "> Poisson Noise" << std::endl;
+            std::cout << "\nNoise Type           : Poisson noise"  << std::endl;
             i++;
 
-        // Spike
-        } else if ( !strncmp( SPIKE_OPTION, argv[i], strlen( SPIKE_OPTION ) ) ) {
-            an->setNoiseType( AddNoise::Spike );
-            std::cout << "\n\nNoise Type" << std::endl;
-            std::cout << "> Spike Noise"  << std::endl;
+        // Outlier
+        } else if ( !strncmp( OUTLIER_OPTION, argv[i], strlen( OUTLIER_OPTION ) ) ) {
+            an->setNoiseType( AddNoise::Outlier );
+            std::cout << "\nNoise Type           : Outlier noise" << std::endl;
             i++;
         }
     }

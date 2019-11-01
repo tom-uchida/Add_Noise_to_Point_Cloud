@@ -3,6 +3,6 @@
 
 const char GAUSSIAN_OPTION[] = "-g";
 const char POISSON_OPTION[]  = "-p";
-const char SPIKE_OPTION[]    = "-s";
+const char OUTLIER_OPTION[]  = "-o";
 
 #endif
