@@ -2,14 +2,13 @@
 ## Overview
 - Add noise to point cloud
 
-- We have the following "hree types of noises"
-   - Gaussian
-   - Poisson
-   - Spike
-
 - We have the following two "noise targets"
    - Coordinate
+      - Gaussian
+      - Poisson
+      - Spike
    - Color
+      - Gaussian
 
 ## Result
 ### Coordinate Noise
