@@ -12,7 +12,7 @@
 
 ## Visualization Result
 ### Coordinate Noise
-|Gaussian|Poisson|Spike|
+|Gaussian noise|Poisson noise|Outlier noise|
 |:-:|:-:|:-:|
 |![coords_noise1](coords/sample_images/gaussian_10per_1e-2.bmp)|![coords_noise2](coords/sample_images/poisson_1per_1e-3.bmp)|![coords_noise3](coords/sample_images/outlier_10per_1e-2.bmp)|
 
