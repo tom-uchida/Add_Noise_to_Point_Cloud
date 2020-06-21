@@ -1,12 +1,16 @@
-// ====================================================
-//    Add noise to the color of an input point cloud
-// ====================================================
+// Uchida-Tomomasas-MacBook-Pro:color uchidatomomasa$ ./addNoise2color 
 
-// USAGE:
-// ./addNoise2color [input_file] [output_file] [noise_probability] [sigma(=standard deviation)]
+// =============================================
+//      Add Noise to "Color" of Point Cloud
+//               Tomomasa Uchida
+//                 2020/06/21
+// =============================================
 
-// EXAMPLE:
-// ./addNoise2color input.ply output.spbr 0.1 5.0
+//   USAGE:
+//   ./addNoise2color [input_file] [output_file] [noise_probability] [sigma(=standard deviation)]
+
+//   EXAMPLE:
+//   ./addNoise2color input.ply output.spbr 0.1 5.0
 
 #include <iostream>
 #include <cstring> 
@@ -30,13 +34,13 @@
 const char OUT_FILE[] = "SPBR_DATA/out_color_noise.spbr";
 
 void message() {
-    std::cout << std::endl;
+    std::cout << "\n";
     std::cout << "=============================================" << std::endl;
     std::cout << "     Add Noise to \"Color\" of Point Cloud"    << std::endl;
-    std::cout << "               Tomomasa Uchida"                << std::endl;
-    std::cout << "                 2020/06/21"                   << std::endl;
+    std::cout << "              Tomomasa Uchida"                 << std::endl;
+    std::cout << "                2020/06/21"                    << std::endl;
     std::cout << "=============================================" << std::endl;
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 int main( int argc, char** argv ) {
@@ -44,10 +48,13 @@ int main( int argc, char** argv ) {
     strcpy( outSPBRfile, OUT_FILE ); 
 
     if ( argc != 5 ) {
-        std::cout   << "\n  ";
-        std::cout   << "USAGE  : " << argv[0] << " [input_file] [output_file] [noise_probability] [sigma(=standard deviation)]";
-        std::cout   << "\n  ";
-        std::cout   << "EXAMPLE: " << argv[0] << " input.ply output.spbr 0.1 5.0\n" << std::endl;
+        message();
+        std::cout << "  ";
+        std::cout << "USAGE:\n  ";
+        std::cout << argv[0] << " [input_file] [output_file] [noise_probability] [sigma(=standard deviation)]";
+        std::cout << "\n\n  ";
+        std::cout << "EXAMPLE:\n  ";
+        std::cout << argv[0] << " input.ply output.spbr 0.1 5.0\n" << std::endl;
         exit(1);
 
     } else if ( argc >= 3 ) {

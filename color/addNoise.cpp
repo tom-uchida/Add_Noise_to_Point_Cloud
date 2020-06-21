@@ -32,11 +32,11 @@ void AddNoise::addNoise2Color( kvs::PolygonObject* _ply ) {
     // Set sigma(=standard deviation)
     m_sigma = m_hyperparameter4noise;
 
-    std::cout << std::endl;
+    std::cout << "\n";
     std::cout << "Hyperparameters about Gaussian noise" << std::endl;
-    std::cout << " - Noise probability        : " << m_noise_probability*100 << "(%)"<< std::endl;
-    std::cout << " - sigma(standard deviation): " << m_sigma << std::endl;
-    std::cout << std::endl;
+    std::cout << " - Noise probability         : " << m_noise_probability*100 << "(%)"<< std::endl;
+    std::cout << " - sigma(standard deviation) : " << m_sigma << std::endl;
+    std::cout << "\n";
     std::cout << "Adding Gaussian noise..." << std::endl;
     
     // Add Gaussian noise to color of each point
@@ -51,7 +51,7 @@ void AddNoise::addGaussianNoise2Color( kvs::PolygonObject* _ply ) {
     kvs::ValueArray<kvs::UInt8> colors = _ply->colors();
 
     m_number = _ply->numberOfVertices();
-    std::cout << " - Number of points: " << m_number << "(points)" << std::endl;
+    std::cout << " - Number of original points : " << m_number << "(points)" << std::endl;
 
     int noise_counter = 0;
     for ( size_t i = 0; i < m_number; i++ ) {

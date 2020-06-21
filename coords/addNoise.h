@@ -29,7 +29,7 @@ public:
     void normalizeNoiseIntensities( void );
 
 private:
-    NoiseType           m_type;
+    NoiseType           m_noise_type;
     size_t	            m_number;
     double	            m_sigma;
     double              m_lamda;
