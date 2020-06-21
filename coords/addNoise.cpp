@@ -9,52 +9,32 @@
 #include <random> // for poisson distribution
 #include <fstream>
 
-
 AddNoise::AddNoise( void ): 
-    m_type( Gaussian ),
+    m_noise_type( Gaussian ),
     m_number( 0 ),
-    m_sigma2( 0.0 ),
-    m_ratio_of_adding_noise( 0.0 ),
-    m_param_spec_to_noise( 0.0 )
+    m_sigma( 0.0 ),
+    m_noise_probability( 0.0 ),
+    m_hyperparameter4noise( 0.0 )
 {}
 
-AddNoise::AddNoise( double _ratio_of_adding_noise, double _param_spec_to_noise): 
+AddNoise::AddNoise( double _noise_probability, double _hyperparameter4noise ): 
     m_number( 0 ),
-    m_sigma2( 0.0 ),
-    m_ratio_of_adding_noise( _ratio_of_adding_noise ),
-    m_param_spec_to_noise( _param_spec_to_noise )
+    m_sigma( 0.0 ),
+    m_noise_probability( _noise_probability ),
+    m_hyperparameter4noise( _hyperparameter4noise )
 {}
 
 void AddNoise::setNoiseType( NoiseType _type ) {
     m_type = _type;
 }
 
-void AddNoise::setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax  ) {
-    kvs::Vector3f diagonal_vector   = _bbmax - _bbmin;
-    double diagonal_length          = diagonal_vector.length();
-    //m_sigma2                        = diagonal_length*diagonal_length * _ratio_for_sigma; // Calc sigma
-    //m_sigma2 = 1024 * _ratio_for_sigma; // 1024(pixel) * 1e-05
-    // _ratio_for_sigma = 1e-05;
-    // m_sigma2 = 1000*1000 * _ratio_for_sigma / 1000; // B^2 * p / 1024pixel
-    // → 10^6 * 10^-5 * 10^-3 = 10^-2
-    // → 10^6 * 10^-5 * 10^-6 = 10^-5
-    m_sigma2 = _ratio_for_sigma; // 1e-05
+void AddNoise::setLamda( double _ratio4lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax ) {
+    kvs::Vector3f bb_diagonal_vector = _bbmax - _bbmin;
+    double bb_diagonal_length        = bb_diagonal_vector.length();
+    m_lamda                          = bb_diagonal_length*bb_diagonal_length * _ratio4lamda;
 
-    std::cout << "Diagonal length of BB: " << diagonal_length << std::endl;
-    std::cout << "sigma2 (variance)    : " << m_sigma2        << std::endl;
-    // std::cout << "> " << m_sigma2 << " ( = " << diagonal_length*diagonal_length 
-    //                                          << " * " << _ratio_for_sigma << "(argv[4]) )" << std::endl;
-    // std::cout << "> " << m_sigma2 << " ( = 1024*1024(B^2) * 10^-5(parameter)(argv[4]) / 1024)" << std::endl;
-    std::cout << "sigma (std)          : " << sqrt(m_sigma2) << std::endl;
-}
-
-void AddNoise::setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax  ) {
-    kvs::Vector3f diagonal_vector   = _bbmax - _bbmin;
-    double diagonal_length          = diagonal_vector.length();
-    m_lamda                         = diagonal_length*diagonal_length * _ratio_for_lamda; // Calc lamda
-
-    std::cout << "Diagonal length of BB: " << diagonal_length << std::endl;
-    std::cout << "lamda (mean)         :" << m_lamda << " ( = " << diagonal_length*diagonal_length << " * " << _ratio_for_lamda << "(argv[4]) )" << std::endl;
+    std::cout << "Diagonal length of BB: " << bb_diagonal_length << std::endl;
+    std::cout << "Lamda(average): " << m_lamda << " (= " << bb_diagonal_length*bb_diagonal_length << " * " << _ratio4lamda << "(argv[4]) )" << std::endl;
 }
 
 void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
@@ -63,14 +43,11 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
     // Add noise
     // Gaussian noise
     if ( m_type == Gaussian ) {
-        setSigma(  /* ratio4sigma  */ m_param_spec_to_noise, 
-                   /* BBmin        */ _ply->minObjectCoord(), 
-                   /* BBmax        */ _ply->maxObjectCoord() );
         addGaussianNoise( _ply );
         
     // Poisson noise
     } else if ( m_type == Poisson ) {
-        setLamda(  /* ratio4sigma  */ m_param_spec_to_noise, 
+        setLamda(  /* ratio4lamda  */ m_hyperparameter4noise, 
                    /* BBmin        */ _ply->minObjectCoord(), 
                    /* BBmax        */ _ply->maxObjectCoord() );
         applyPoissonNoise( _ply );
@@ -97,7 +74,8 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
     if ( num == _ply->numberOfNormals() ) hasNormal = true;
 
     std::cout << "Number of points     : " << m_number << " (points)" << std::endl;
-    std::cout << "\nAdding Gaussian noise with " << m_ratio_of_adding_noise*100 << "(%)..."    << std::endl;
+    std::cout << "\n";
+    std::cout << "Adding Gaussian noise with " << m_ratio_of_adding_noise*100 << "(%)..."    << std::endl;
 
     int noise_counter   = 0;
     // coords[]（KVS） → pcl::PointXYZ(x,y,z)（PCL）
@@ -116,11 +94,11 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
 
         // Add Gaussian noise
         if ( uniRand() < m_ratio_of_adding_noise ) {
-            // N(μ, σ^2)
+            // N(μ, σ)
             // Generate Gaussian noise
-            float x_noise = gaussRand.rand(0.0, m_sigma2);
-            float y_noise = gaussRand.rand(0.0, m_sigma2);
-            float z_noise = gaussRand.rand(0.0, m_sigma2);
+            float x_noise = gaussRand.rand(0.0, m_sigma);
+            float y_noise = gaussRand.rand(0.0, m_sigma);
+            float z_noise = gaussRand.rand(0.0, m_sigma);
 
             kvs::Vector3f origin_point(x, y, z);
             kvs::Vector3f noised_point(x+x_noise, y+y_noise, z+z_noise);
@@ -242,12 +220,15 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
     // Save max & min noise intensity
     m_max_noise_intensity = tmp_max;
     m_min_noise_intensity = tmp_min;
-    std::cout << "\nMax noise intensity" << std::endl;
+    std::cout << "\n";
+    std::cout << "Max noise intensity" << std::endl;
     std::cout << "> " << m_max_noise_intensity << std::endl;
-    std::cout << "\nMin noise intensity" << std::endl;
+    std::cout << "\n";
+    std::cout << "Min noise intensity" << std::endl;
     std::cout << "> " << m_min_noise_intensity << std::endl;
 
-    std::cout << "\nNumber of noised points" << std::endl;
+    std::cout << "\n";
+    std::cout << "Number of noised points" << std::endl;
     std::cout << "> " << noise_counter       << std::endl;
 }
 
@@ -263,7 +244,8 @@ void AddNoise::addOutlierNoise( kvs::PolygonObject* _ply ) {
     if ( num == _ply->numberOfNormals() ) hasNormal = true;
 
     std::cout << "Number of points     : " << m_number << " (points)" << std::endl;
-    std::cout << "\nAdding outlier noise with " << m_ratio_of_adding_noise*100 << "(%)..."    << std::endl;
+    std::cout << "\n";
+    std::cout << "Adding outlier noise with " << m_ratio_of_adding_noise*100 << "(%)..."    << std::endl;
 
     // Pre-Process for generating 3D random point
     kvs::Vector3f min_BB = _ply->minObjectCoord();
@@ -292,14 +274,14 @@ void AddNoise::addOutlierNoise( kvs::PolygonObject* _ply ) {
         if ( uniRand() < m_ratio_of_adding_noise ) {
             kvs::Vector3f origin_point(x, y, z);
 
-            // Random 3D point in Bounding Box
+            // Random 3D point in BB
             x = x_BB*uniRand() + min_BB.x(); // x coord is a random number [min_BB.x, max_BB.x]
             y = y_BB*uniRand() + min_BB.y(); // y coord is a random number [min_BB.y, max_BB.y]
             z = z_BB*uniRand() + min_BB.z(); // z coord is a random number [min_BB.z, max_BB.z]
 
             kvs::Vector3f noised_point(x, y, z);
 
-            // write to .txt file
+            // Write to .txt file
             //fout_outlier_noise_point << x << " " << y << " " << z << std::endl;
 
             // Calculate noise intensity

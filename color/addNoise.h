@@ -1,4 +1,5 @@
-// 2019/6/15 : Supported adding Gaussian noise to color of each point
+// 2019/6/15: Supported adding Gaussian noise to color of each point
+// 2020/6/21: Fixed some bugs
 
 #ifndef _AddNoise_H__
 #define _AddNoise_H__
@@ -14,7 +15,7 @@ public:
     enum NoiseType {
         Gaussian = 0,
         Poisson  = 1,
-        Spike    = 2
+        Outlier  = 2
     };
 
     enum NoiseTarget {
@@ -24,7 +25,7 @@ public:
 
 public:
     AddNoise( void );
-    AddNoise( double _ratio_of_adding_noise, double _param_spec_to_noise);
+    AddNoise( double _noise_probability, double _hyperparameter4noise );
 
     void setNoiseType( NoiseType _type );
     void addNoise2Coords( kvs::PolygonObject* _ply );
@@ -40,10 +41,10 @@ private:
     NoiseType           m_noise_type;
     NoiseTarget         m_noise_target;
     size_t	            m_number;
-    double	            m_sigma2;
+    double	            m_sigma;
     double              m_lamda;
-    double	            m_ratio_of_adding_noise;
-    double              m_param_spec_to_noise;
+    double	            m_noise_probability;
+    double              m_hyperparameter4noise;
     std::vector<bool>   m_is_noise_points;
 
     std::vector<float>  m_noise_intensities;
@@ -53,17 +54,16 @@ private:
 private:
     // Gaussian
     //  coords
-    void setSigma( double _ratio_for_sigma, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
     void addGaussianNoise( kvs::PolygonObject* _ply );
     //  color
     void addGaussianNoise2Color( kvs::PolygonObject* _ply );
 
     // Poisson
-    void setLamda( double _ratio_for_lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
+    void setLamda( double _ratio4lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax );
     void applyPoissonNoise( kvs::PolygonObject* _ply );
 
-    // Spike
-    void addSpikeNoise( kvs::PolygonObject* _ply );    
+    // Outlier
+    void addOutlierNoise( kvs::PolygonObject* _ply );    
 };
 
 #endif

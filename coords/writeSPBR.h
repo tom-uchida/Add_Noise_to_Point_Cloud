@@ -39,7 +39,6 @@ void writeSPBR(  kvs::PolygonObject *_ply,
     kvs::ValueArray<kvs::UInt8>          colors      = _ply->colors();
 
     clock_t start = clock(); // Start time count
-    std::cout << "\nWriting spbr file..." << std::endl;
     std::ofstream fout( _filename );
     if ( _type == Ascii ) {
         fout << "#/SPBR_ASCII_Data"       << std::endl;
@@ -53,7 +52,9 @@ void writeSPBR(  kvs::PolygonObject *_ply,
         fout << "#/EndHeader"             << std::endl;
     }
 
-    // Write to ouput file
+    // Write to ouput spbr file
+    std::cout << "\n";
+    std::cout << "Writing spbr file..." << std::endl;
     for ( int i = 0; i < num; i++ ) {
         // coords                                               
         float x = coords[3*i];
@@ -103,9 +104,16 @@ void writeSPBR(  kvs::PolygonObject *_ply,
             fout << x   << " " << y  << " " << z  << " "
 	             << nx  << " " << ny << " " << nz << " "
 	             << r   << " " << g  << " " << b  << " " 
-                 << std::endl;
+                 << "\n";
                  //<< _ni[i] << std::endl; // noise intensity
         } // end if
+
+        // Display progress
+        double processing_ratio = 100.0 * (double)i / (double)num;
+        if ( !(i % 1000000) && i > 0 ) { 
+            std::cout << "*** Num. of processed points: " << i;
+            std::cout << " [" << processing_ratio << " %]" << "\n";
+        }
     } // end for
 
     clock_t end = clock(); // End time count

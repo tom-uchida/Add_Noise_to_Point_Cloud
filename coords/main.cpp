@@ -1,16 +1,16 @@
-// ===================================================
-//      Add three types of noises to point cloud
-// ===================================================
+// ==========================================================
+//    Add noise to the coordinates of an input point cloud
+// ==========================================================
 
 // USAGE:
-// ./addNoise [data_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]
+// ./addNoise2coords [input_file] [output_file] [noise_probability] [hyperparameter4noise] [noise_option]
 
-// [For example]
-// $ ./addNoise input.ply output.spbr 0.1 0.001 -g
-// > Gaussian : sigma2 = 0.001
-// > Poisson  : lamda  = b_leng * 0.001
-// > Spike    : none
-// > Add noise with (0.1*100=)10 percent.
+// EXAMPLE:
+// ./addNoise2coords input.ply output.spbr 0.1 0.01 -g
+// > Add noise with 10(=0.1*100) percent.
+// > Gaussian: sigma = 0.01
+// > Poisson : lamda = (diagonal length of BB) * 0.01
+// > Outlier : none
 
 #include <iostream>
 #include <cstring> 
@@ -37,15 +37,15 @@
 //#define NOISE_INTENSITY
 // #define NOISE_ARTIFICIAL_PLANE
 
-const char OUT_FILE[] = "SPBR_DATA/out_noised.spbr";
+const char OUT_FILE[] = "SPBR_DATA/out_coords_noise.spbr";
 
 void message() {
     std::cout << std::endl;
-    std::cout << "===========================================" << std::endl;
-    std::cout << "     Add Noise to Coord of Point Cloud"      << std::endl;
-    std::cout << "             Tomomasa Uchida"                << std::endl;
-    std::cout << "               2019/11/01"                   << std::endl;
-    std::cout << "===========================================" << std::endl;
+    std::cout << "================================================" << std::endl;
+    std::cout << "     Add Noise to \"Coords\" of Point Cloud"      << std::endl;
+    std::cout << "               Tomomasa Uchida"                   << std::endl;
+    std::cout << "                 2020/06/21"                      << std::endl;
+    std::cout << "================================================" << std::endl;
 }
 
 int main( int argc, char** argv ) {
@@ -53,34 +53,36 @@ int main( int argc, char** argv ) {
     strcpy( outSPBRfile, OUT_FILE ); 
 
     if ( argc != 6 ) {
-        std::cout << "\nUSAGE:  " << argv[0] << " [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]\n"
+        std::cout << "\nUSAGE:  " << argv[0] << " [input_file] [output_file] [noise_probability] [hyperparameter4noise] [noise_option]\n"
                   << "EXAMPLE:" 
-                  << "$ " << argv[0] << " input.ply output.spbr 0.1 0.001\n"
+                  << "$ " << argv[0] << " input.ply output.spbr 0.1 0.01\n"
                   << "> Add noise with 10(=0.1*100) percent.\n"
-                  << "> - Gaussian : sigma2 = 0.001\n"
-                  << "> - Poisson  : lamda  = b_leng * 0.001\n"
-                  << "> - Outlier  : none\n"
+                  << "> - Gaussian: sigma = 0.01\n"
+                  << "> - Poisson : lamda = (diagonal length of BB) * 0.01\n"
+                  << "> - Outlier : none\n"
                   << std::endl;
         exit(1);
 
     } else if ( argc >= 3 ) {
         strcpy( outSPBRfile, argv[2] );
     }
+
+    // Display message
+    message();
     
-    // ----- Import "point cloud data（.ply, argv[1]）" that user selected
-    // ----- Inheritance of KVS::PolygonObject -----
+    // Import "point cloud data（.ply, argv[1]）" that user selected
+    // Inheritance of KVS::PolygonObject -----
     ImportPointClouds *ply = new ImportPointClouds( argv[1] );
     ply->updateMinMaxCoords();
-    std::cout << "\nPLY Min, Max Coords:" << std::endl;
-    std::cout << "Min : " << ply->minObjectCoord() << std::endl;
-    std::cout << "Max : " << ply->maxObjectCoord() << std::endl;
+    // std::cout << "\nPLY Min, Max Coords:" << std::endl;
+    // std::cout << "Min : " << ply->minObjectCoord() << std::endl;
+    // std::cout << "Max : " << ply->maxObjectCoord() << std::endl;
 
-    message();
+    // Set up for adding noise
+    AddNoise *an = new AddNoise( /* noise probability    */ atof(argv[3]),
+                                 /* hyperparameter4noise */ atof(argv[4]) );
 
-    // ----- Set up for adding noise -----
-    AddNoise *an = new AddNoise( atof(argv[3]), atof(argv[4]) );
-
-    // ----- Apply noise type ( Gaussian or Poisson or Outlier ) -----
+    // Apply noise type ( Gaussian or Poisson or Outlier )
     for ( int i = 1; i < argc; i++ ) {
         // Gaussian
         if ( !strncmp( GAUSSIAN_OPTION, argv[i], strlen( GAUSSIAN_OPTION ) ) ) {
@@ -100,19 +102,15 @@ int main( int argc, char** argv ) {
             std::cout << "\nNoise Type           : Outlier noise" << std::endl;
             i++;
         }
-    }
+    } // end for
 
-
-    // ---------------------
-    // ----- Add Noise -----
-    // ---------------------
+    // Add Noise
     an->addNoise( /* kvs::PolygonObject* */ ply );
 
-
-    // ----- Get noise indices -----
+    // Get noise indexes
     std::vector<bool> is_noise_points = an->getIsNoisePoints();
 
-    // ----- Get noise intensity -----
+    // Get noise intensity
 #ifdef NOISE_INTENSITY
     // const float max_noise_intensity = (float)an->getMaxNoiseIntensity();
     // const float min_noise_intensity = (float)an->getMinNoiseIntensity();
@@ -124,7 +122,7 @@ int main( int argc, char** argv ) {
     // kvs::ColorMap cmap( 256, 0.0, max_noise_intensity );
     // cmap.create();
 
-    // ----- Apply color -----
+    // Apply color
     std::vector<unsigned char>  colors;
     kvs::ValueArray<kvs::UInt8> original_colors = ply->colors();
     kvs::RGBColor white(255, 255, 255), red(255, 0, 0), black(0, 0, 0);
@@ -178,21 +176,21 @@ int main( int argc, char** argv ) {
     }
     ply->setColors( kvs::ValueArray<kvs::UInt8>( colors ) );
 
-    // ----- Write .spbr file -----
-    WritingDataType type = Ascii;   // Writing data as ascii
+    // Write to spbr file
+    WritingDataType type = Ascii; // Writing data as ascii
     writeSPBR( ply,                    /* kvs::PolygonObject *_ply        */  
                //noise_intensities,    /* std::vector<float> &_ni         */  
                outSPBRfile,            /* char*              _filename    */  
                type );                 /* WritingDataType    _type        */  
-  
-    // ----- Convert "PolygonObject（KVS）" to "PointObject（KVS）" -----
+
+    // Convert "PolygonObject（KVS）" to "PointObject（KVS）"
     kvs::PointObject* object = new kvs::PointObject( *ply );
     object->setSize( 1 );
     object->updateMinMaxCoords(); 
 
 
 
-    // ----- Exec. SPBR -----
+    // Exec. SPBR
 #ifdef EXEC_VIA_SPBR
     std::string out_noised_spbr( outSPBRfile );
     std::string EXEC("spbr ");
@@ -202,7 +200,7 @@ int main( int argc, char** argv ) {
     return 0;
 #endif
 
-    // ----- Exec. KVS -----
+    // Exec. KVS
 #ifdef EXEC_VIA_KVS
     kvs::glut::Application app( argc, argv );
     kvs::glut::Screen screen( &app );
