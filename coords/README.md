@@ -1,34 +1,42 @@
-# Add_Noise_to_Point_Cloud
+# Add Noise to "Coords" of Point Cloud
 ## Overview
-Add the following three types of noises to coordinates of points.
-   - Gaussian
-   - Poisson
-   - Outlier
+- Add the following three types of noises to the coordinates of each point.
+   - Gaussian noise
+   - Poisson noise
+   - Outlier noise
 
-### Usage
-`./addNoise [input_file] [output_file] [ratio_of_adding_noise] [param_spec_to_noise] [noise_option]`
+## Usage
+```
+$ ./addNoise2coords 
 
-### For example
-`./addNoise [.ply] [.spbr] [0.1] [0.01] [-g]`
+================================================
+     Add Noise to "Coords" of Point Cloud
+               Tomomasa Uchida
+                 2020/06/21
+================================================
 
-|argv|content|
-|:--:|:--|
-|argv[1]|Input file (.ply)|
-|argv[2]|Output file (.spbr)|
-|argv[3]|Probability of adding noise|
-|argv[4]|Parameter (sigma, lamda, none)|
-|argv[5]|Noise type (-g, -p, -o)|
+  USAGE:
+  ./addNoise2coords [input_file] [output_file] [noise_probability] [hyperparameter4noise] [noise_option]
 
+  EXAMPLE:
+  ./addNoise2coords input.ply output.spbr 0.1 0.01 -g
 
-## Result
+   [noise_probability]
+    Add noise with 10(=0.1*100) percent.
+
+   [hyperparameter4noise]
+    Gaussian : sigma = 0.01
+    Poisson  : lamda = (diagonal length of BB) * 0.01
+    Outlier  : none
+
+   [noise_option]
+    -g : Add Gaussian noise
+    -p : Add Poisson noise
+    -o : Add Outlier noise
+```
+
+## Visualization Result
 ### Figure
-|Gaussian|Poisson|Spike|
+|Gaussian noise|Poisson noise|Outlier noise|
 |:-:|:-:|:-:|
-|![gaussian](sample_images/gaussian_LR1.bmp)|![poisson](sample_images/poisson_LR1.bmp)|![spike](sample_images/spike_LR1.bmp)|
-
-### Parameter
-|Noise type|argv[3]|argv[4]|argv[5]|
-|:--|:-:|:-|:-:|
-|Gaussian|0.1 (10%)|0.01 (variance=0.01)|-g|
-|Poisson|0.1 (10%)|0.01 (lamda=diagonal length of BB*0.01)|-p|
-|Outlier|0.1 (10%)|none|-o|
+|![gaussian](sample_images/gaussian_10per_1e-2.bmp)|![poisson](sample_images/poisson_1per_1e-3.bmp)|![spike](sample_images/outlier_10per_1e-2.bmp)|

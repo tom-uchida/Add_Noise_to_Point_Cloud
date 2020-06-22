@@ -1,14 +1,25 @@
-# Add_Noise_to_Point_Cloud
+# Add Noise to "Color" of Point Cloud
 ## Overview
-Add the Gaussian noise to color of each point
+- Add the Gaussian noise to the color of each point.
 
-### Usage
-`./addNoise2color [data_file] [output_file] [noise_ratio] [sigma(=standard deviation)]`
+## Usage
+```
+$ ./addNoise2color 
 
-### For example
-`./addNoise input.ply output.spbr 0.1 5.0`
+=============================================
+     Add Noise to "Color" of Point Cloud
+              Tomomasa Uchida
+               2020/06/21
+=============================================
 
-## Result
-|Original color|sigma=5|sigma=10|
+  USAGE:
+  ./addNoise2color [input_file] [output_file] [noise_probability] [sigma(=standard deviation)]
+
+  EXAMPLE:
+  ./addNoise2color input.ply output.spbr 0.1 5.0
+```
+
+## Visualization Result
+|Original color|sigma=20|sigma=40|
 |:-:|:-:|:-:|
-|![color_noise1](sample_images/funehoko_original_color.bmp)|![color_noise2](sample_images/100per_sigma5.bmp)|![color_noise3](sample_images/100per_sigma10.bmp)|
+|![color_noise1](sample_images/funehoko_original_color.bmp)|![color_noise2](sample_images/funehoko_50per_sigma20.bmp)|![color_noise3](sample_images/funehoko_50per_sigma40.bmp)|
