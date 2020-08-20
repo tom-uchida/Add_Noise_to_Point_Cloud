@@ -47,8 +47,10 @@ int main( int argc, char** argv ) {
     char outSPBRfile[512];
     strcpy( outSPBRfile, OUT_FILE ); 
 
+    // Display message
+    message();
+
     if ( argc != 5 ) {
-        message();
         std::cout << "  ";
         std::cout << "USAGE:\n  ";
         std::cout << argv[0] << " [input_file] [output_file] [noise_probability] [sigma(=standard deviation)]";
@@ -60,9 +62,6 @@ int main( int argc, char** argv ) {
     } else if ( argc >= 3 ) {
         strcpy( outSPBRfile, argv[2] );
     }
-
-    // Display message
-    message();
     
     // Import "point cloud data（.ply, argv[1]）" that user selected
     // Inheritance of KVS::PolygonObject

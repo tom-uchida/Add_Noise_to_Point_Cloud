@@ -127,7 +127,7 @@ int main( int argc, char** argv ) {
             // std::cout << "\n";
             // std::cout << "Noise Type : Outlier noise" << std::endl;
             i++;
-        }
+        } // end if
     } // end for
 
     // Add Noise
