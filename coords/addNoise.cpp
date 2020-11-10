@@ -2,8 +2,6 @@
 
 #include <vector>
 #include <time.h>
-// #include <pcl/point_cloud.h>
-// #include <pcl/kdtree/kdtree_flann.h> 
 #include <kvs/BoxMuller> 
 #include <kvs/MersenneTwister>
 #include <random> // for poisson distribution
@@ -29,8 +27,8 @@ void AddNoise::setNoiseType( NoiseType _type ) {
 }
 
 void AddNoise::setLamda( double _ratio4lamda, kvs::Vector3f _bbmin, kvs::Vector3f _bbmax ) {
-    kvs::Vector3f bb_diagonal_vector = _bbmax - _bbmin;
-    double bb_diagonal_length        = bb_diagonal_vector.length();
+    const kvs::Vector3f bb_diagonal_vector = _bbmax - _bbmin;
+    const double bb_diagonal_length        = bb_diagonal_vector.length();
     m_lamda                          = bb_diagonal_length*bb_diagonal_length * _ratio4lamda;
 
     std::cout << "\n";
@@ -39,9 +37,8 @@ void AddNoise::setLamda( double _ratio4lamda, kvs::Vector3f _bbmin, kvs::Vector3
 }
 
 void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
-    clock_t start = clock(); // Start time count
+    const clock_t start = clock(); // Start time count
 
-    // Add noise
     // Gaussian noise
     if ( m_noise_type == Gaussian ) {
         m_sigma = m_hyperparameter4noise;
@@ -49,9 +46,11 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
         
     // Poisson noise
     } else if ( m_noise_type == Poisson ) {
-        setLamda(  /* ratio4lamda  */ m_hyperparameter4noise, 
-                   /* BBmin        */ _ply->minObjectCoord(), 
-                   /* BBmax        */ _ply->maxObjectCoord() );
+        setLamda(
+            m_hyperparameter4noise, /* ratio4lamda  */
+            _ply->minObjectCoord(), /* BBmin        */
+            _ply->maxObjectCoord()  /* BBmax        */
+        );
         applyPoissonNoise( _ply );
         
     // Outlier noise
@@ -59,63 +58,36 @@ void AddNoise::addNoise( kvs::PolygonObject* _ply ) {
         addOutlierNoise( _ply );
     } // end if
 
-    clock_t end = clock(); // End time count
+    const clock_t end = clock(); // End time count
     std::cout << "\n";
     std::cout << "Done adding noise!" << std::endl;
-    std::cout << " - " <<(double)(end - start) / CLOCKS_PER_SEC << " (sec)" << std::endl;
+    std::cout << " - " << (double)( end - start ) / CLOCKS_PER_SEC << " (sec)" << std::endl;
 } // end of addNoise( kvs::PolygonObject* _ply )
 
 void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
-    // std::vector<pcl::PointXYZ>  points;
-    kvs::BoxMuller              gaussRand;
-    kvs::MersenneTwister        uniRand;
+    kvs::BoxMuller        gaussRand;
+    kvs::MersenneTwister  uniRand;
 
     kvs::ValueArray<kvs::Real32> coords  = _ply->coords(); 
     kvs::ValueArray<kvs::Real32> normals = _ply->normals();
-    size_t num      = _ply->numberOfVertices();
-    m_number        = num;
+    m_number        = _ply->numberOfVertices();
     bool hasNormal  = false;
-    if ( num == _ply->numberOfNormals() ) hasNormal = true;
+    if ( m_number == _ply->numberOfNormals() ) hasNormal = true;
 
     std::cout << "\n";
     std::cout << "Adding \"Gaussian noise\" with " << m_noise_probability*100 << "(%)..."    << std::endl;
-    std::cout << " - sigma(standard deviation) : " << m_sigma << std::endl;
-    std::cout << " - Number of original points : " << m_number << " (points)" << std::endl;
+    std::cout << " - sigma(standard deviation): " << m_sigma << std::endl;
+    std::cout << " - Number of original points: " << m_number << " (points)" << std::endl;
 
-    int noise_counter = 0;
-    // coords[]（KVS） → pcl::PointXYZ(x,y,z)（PCL）
-    for ( size_t i = 0; i < num; i++ ) {
-        
+    size_t noise_counter = 0;
+    for ( size_t i = 0; i < m_number; i++ ) {
         // Add Gaussian noise
         if ( uniRand() < m_noise_probability ) {
-            // Get original coordinate of input point cloud
-            float x  = coords[3*i];
-            float y  = coords[3*i+1];
-            float z  = coords[3*i+2];
-
-            // N(μ, σ)
-            // Generate Gaussian noise
-            float x_noise = gaussRand.rand(0.0, m_sigma);
-            float y_noise = gaussRand.rand(0.0, m_sigma);
-            float z_noise = gaussRand.rand(0.0, m_sigma);
-
-            // kvs::Vector3f origin_point(x, y, z);
-            // kvs::Vector3f noised_point(x+x_noise, y+y_noise, z+z_noise);
-
-            // Add Gaussian noise
-            x += x_noise;
-            y += y_noise;
-            z += z_noise;
-
-            // // Calculate noise intensity
-            // kvs::Vector3f distance = noised_point - origin_point;
-            // float noise_intensity  = distance.length();
-            // m_noise_intensities.push_back(noise_intensity);
 
             // Apply adding noise
-            coords[3*i]     = x;
-            coords[3*i+1]   = y;
-            coords[3*i+2]   = z;
+            coords[3*i]   += gaussRand.rand( 0.0, m_sigma );
+            coords[3*i+1] += gaussRand.rand( 0.0, m_sigma );
+            coords[3*i+2] += gaussRand.rand( 0.0, m_sigma );
 
             noise_counter++;
             m_is_noise_points.push_back( true );
@@ -123,16 +95,11 @@ void AddNoise::addGaussianNoise( kvs::PolygonObject* _ply ) {
         } else {
             m_is_noise_points.push_back( false );
         } // end if
-    
-        // points.push_back( pcl::PointXYZ( x, y, z ) );
+
         _ply->setCoords( coords );
     } // end for
 
-    // Save max noise intensity
-    // m_max_noise_intensity = *std::min_element(m_noise_intensities.begin(), m_noise_intensities.end());
-    // std::cout << " ** Max noise intensity   : " << m_max_noise_intensity << std::endl;
-
-    std::cout << " - Number of noised points   : " << noise_counter<< " (points)" << std::endl;
+    std::cout << " - Number of noise points   : " << noise_counter << " (points)" << std::endl;
 } // end of addGaussianNoise( kvs::PolygonObject* _ply )
 
 void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
@@ -156,8 +123,8 @@ void AddNoise::applyPoissonNoise( kvs::PolygonObject* _ply ) {
     std::cout << " - Number of original points : " << m_number << std::endl;
 
     float scale       = m_lamda;
-    float tmp_max     = 1.0e-1;
-    float tmp_min     = 1.0e7;
+    // float tmp_max     = 1.0e-1;
+    // float tmp_min     = 1.0e7;
     int noise_counter = 0;
     // coords[]（KVS） → pcl::PointXYZ(x,y,z)（PCL）
     for ( size_t i = 0; i < num; i++ ) {

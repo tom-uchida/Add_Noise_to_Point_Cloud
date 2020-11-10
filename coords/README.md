@@ -1,6 +1,6 @@
 # Add Noise to "Coords" of Point Cloud
 ## Overview
-- Add the following three types of noises to the coordinates of each point.
+- Add the following three types of noises to the coordinates of each 3D point.
    - Gaussian noise
    - Poisson noise
    - Outlier noise
@@ -16,27 +16,25 @@ $ ./addNoise2coords
 ================================================
 
   USAGE:
-  ./addNoise2coords [input_file] [output_file] [noise_probability] [hyperparameter4noise] [noise_option]
+  ./addNoise2coords [input_file] [output_file] [noise_probability] [hyperparameter4noise] [noise_type]
 
   EXAMPLE:
-  ./addNoise2coords input.ply output.spbr 0.1 0.01 -g
+  ./addNoise2coords input.ply output.spbr 0.1 0.1 -g
 
    [noise_probability]
     Add noise with 10(=0.1*100) percent.
 
    [hyperparameter4noise]
-    Gaussian : sigma = 0.01
-    Poisson  : lamda = (diagonal length of BB) * 0.01
-    Outlier  : none
+    Gaussian: sigma = 0.1
+    Outlier : none
 
-   [noise_option]
-    -g : Add Gaussian noise
-    -p : Add Poisson noise
-    -o : Add Outlier noise
+   [noise_type]
+    -g: Gaussian noise
+    -o: Outlier noise
 ```
 
 ## Visualization Result
-### Figure
-|Gaussian noise|Poisson noise|Outlier noise|
+
+|Gaussian noise|Outlier noise|
 |:-:|:-:|:-:|
-|![gaussian](sample_images/gaussian_10per_1e-2.bmp)|![poisson](sample_images/poisson_1per_1e-3.bmp)|![spike](sample_images/outlier_10per_1e-2.bmp)|
+|![gaussian](sample_images/gaussian_10per_1e-2.bmp)|![spike](sample_images/outlier_10per_1e-2.bmp)|

@@ -24,10 +24,11 @@ const int   COLOR[3]    = { 255, 0, 0 };
  *  @param  type        Ascii or Binary
  **/
 /*===========================================================================*/
-void writeSPBR(  kvs::PolygonObject *_ply,
-                 //std::vector<float> &_ni,
-                 char* _filename,
-                 WritingDataType _type = Ascii ) {
+void writeSPBR(
+    kvs::PolygonObject *_ply,
+    char* _filename,
+    WritingDataType _type = Ascii )
+{
 
     size_t  num         = _ply->numberOfVertices(); 
     bool    hasNormal   = false;
@@ -38,7 +39,7 @@ void writeSPBR(  kvs::PolygonObject *_ply,
     kvs::ValueArray<kvs::Real32>         normals     = _ply->normals();
     kvs::ValueArray<kvs::UInt8>          colors      = _ply->colors();
 
-    clock_t start = clock(); // Start time count
+    const clock_t start = clock(); // Start time count
     std::ofstream fout( _filename );
     if ( _type == Ascii ) {
         fout << "#/SPBR_ASCII_Data"       << std::endl;
@@ -116,10 +117,10 @@ void writeSPBR(  kvs::PolygonObject *_ply,
         }
     } // end for
 
-    clock_t end = clock(); // End time count
+    const clock_t end = clock(); // End time count
     std::cout << "\n";
     std::cout << "Done writing to spbr file!" << std::endl;
-    std::cout << " - " << (double)(end - start) / CLOCKS_PER_SEC / 60 << " (minutes)" << std::endl;
+    std::cout << " - " << (double)( end - start ) / CLOCKS_PER_SEC << " (sec)" << std::endl;
     std::cout << "\n";
 
     fout.close();
