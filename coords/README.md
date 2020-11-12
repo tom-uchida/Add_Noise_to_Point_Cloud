@@ -2,7 +2,6 @@
 ## Overview
 - Add the following three types of noises to the coordinates of each 3D point.
    - Gaussian noise
-   - Poisson noise
    - Outlier noise
 
 ## Usage
@@ -36,5 +35,5 @@ $ ./addNoise2coords
 ## Visualization Result
 
 |Gaussian noise|Outlier noise|
-|:-:|:-:|:-:|
+|:-:|:-:|
 |![gaussian](sample_images/gaussian_10per_1e-2.bmp)|![spike](sample_images/outlier_10per_1e-2.bmp)|
