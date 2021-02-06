@@ -4,7 +4,7 @@
 #include <algorithm> 
 #include <iterator>
 
-#include  "xyzAsciiReader.h"
+#include  "xyz_ascii_reader.h"
 
 const int BUF_MAX = 1024;
 const float NORM_DATA[3] = {0.0, 0.0, 0.0};

@@ -1,12 +1,17 @@
+// ============================================
+//      Add Noise to Coords of Point Cloud
+//               Tomomasa Uchida
+//                 2021/02/06
+// ============================================
+
 #include <iostream>
 #include <cstring> 
 #include <cstdlib>
 #include <vector>
-#include "importPointClouds.h"
-#include "addNoise.h"
-#include "writeSPBR.h"
+#include "import_point_clouds.h"
+#include "add_noise.h"
+#include "write_spbr.h"
 #include "noise_type.h"
-#include "tinycolormap.h"
 
 #include <kvs/PolygonObject>
 #include <kvs/PointObject>
@@ -19,83 +24,75 @@
 
 const char OUT_FILE[] = "SPBR_DATA/out_coords_noise.spbr";
 
-void message() {
+inline void message() {
     std::cout << "\n";
-    std::cout << "================================================" << std::endl;
-    std::cout << "     Add Noise to \"Coords\" of Point Cloud"      << std::endl;
-    std::cout << "               Tomomasa Uchida"                   << std::endl;
-    std::cout << "                 2020/06/21"                      << std::endl;
-    std::cout << "================================================" << std::endl;
+    std::cout << "=============================================" << std::endl;
+    std::cout << "     Add Noise to \"Coords\" of Point Cloud"   << std::endl;
+    std::cout << "               Tomomasa Uchida"                << std::endl;
+    std::cout << "                 2021/02/06"                   << std::endl;
+    std::cout << "=============================================" << std::endl;
     std::cout << "\n";
+}
+
+inline void display_usage( char* _argv0 ) {
+    std::cout   << "  USAGE:\n  "
+                << _argv0
+                << " [input_file] [output_file] [noise_probability] [sigma] [noise_type]"
+                << "\n\n  EXAMPLE:\n  "
+                << _argv0
+                << " input.ply output.spbr 0.1 0.1 -g"
+                << "\n\n"
+                << "   [noise_probability]\n"
+                << "    Add noise with 10(=0.1*100) percent."
+                << "\n\n"
+                << "   [sigma]\n"
+                << "    Gaussian: sigma = 0.1\n"
+                << "    Outlier : none(skip the sigma.)"
+                << "\n\n"
+                << "   [noise_type]\n"
+                << "    -g: Gaussian noise\n"
+                << "    -o: Outlier noise\n"
+                << std::endl;
 }
 
 int main( int argc, char** argv ) {
     char outSPBRfile[512];
     strcpy( outSPBRfile, OUT_FILE ); 
+    message();
 
-    if ( argc != 6 ) {
-        message();
-        std::cout << "  USAGE:\n  ";
-        std::cout << argv[0] << " [input_file] [output_file] [noise_probability] [hyperparameter4noise] [noise_type]";
-        std::cout << "\n\n  EXAMPLE:\n  ";
-        std::cout << argv[0] << " input.ply output.spbr 0.1 0.1 -g"
-                  << "\n\n"
-                  << "   [noise_probability]\n"
-                  << "    Add noise with 10(=0.1*100) percent."
-                  << "\n\n"
-                  << "   [hyperparameter4noise]\n"
-                  << "    Gaussian: sigma = 0.1\n"
-                  << "    Outlier : none"
-                  << "\n\n"
-                  << "   [noise_type]\n"
-                  << "    -g: Gaussian noise\n"
-                  << "    -o: Outlier noise\n"
-                  << std::endl;
+    if ( argc != 6 ) {    
+        display_usage( argv[0] );
         exit(1);
-
-    } else if ( argc >= 3 ) {
+    } else {
         strcpy( outSPBRfile, argv[2] );
     } // end if
-
-    // Display message
-    message();
     
-    // Import input point cloud
+    // Import the input point cloud
     ImportPointClouds *ply = new ImportPointClouds( argv[1] );
     ply->updateMinMaxCoords();
-    std::cout << "\nPLY Min, Max Coords:" << std::endl;
-    std::cout << "Min : " << ply->minObjectCoord() << std::endl;
-    std::cout << "Max : " << ply->maxObjectCoord() << std::endl;
+    std::cout << "\n";
+    std::cout << "Bounding Box:" << "\n";
+    std::cout << " Min: " << ply->minObjectCoord() << "\n";
+    std::cout << " Max: " << ply->maxObjectCoord() << "\n";
 
-    // Set up for adding noise
+    // Instantiate "AddNoise" class
     AddNoise *an = new AddNoise(
-        atof( argv[3] ),  /* double _noise_probability    */ 
-        atof( argv[4] )   /* double _hyperparameter4noise */
+        atof( argv[3] ),  /* double _noise_prob */ 
+        atof( argv[4] )   /* double _sigma      */
     );
 
-    // Determine noise type ( Gaussian or Poisson or Outlier )
-    for ( int i = 1; i < argc; i++ ) {
+    // Set noise type
+    for ( size_t i = 1; i < argc; i++ ) {
         // Gaussian
-        if ( !strncmp( GAUSSIAN_TYPE , argv[i], strlen( GAUSSIAN_TYPE ) ) ) {
+        if ( !strncmp( GAUSSIAN_TYPE, argv[i], strlen( GAUSSIAN_TYPE ) ) ) {
             an->setNoiseType( AddNoise::Gaussian );
-            // std::cout << "\n";
-            // std::cout << "Noise Type : Gaussian noise"   << std::endl;
-            i++;
-
-        // Poisson
-        } else if ( !strncmp( POISSON_TYPE, argv[i], strlen( POISSON_TYPE ) ) ) {
-            an->setNoiseType( AddNoise::Poisson );
-            // std::cout << "\n";
-            // std::cout << "Noise Type : Poisson noise"  << std::endl;
             i++;
 
         // Outlier
         } else if ( !strncmp( OUTLIER_TYPE, argv[i], strlen( OUTLIER_TYPE ) ) ) {
             an->setNoiseType( AddNoise::Outlier );
-            // std::cout << "\n";
-            // std::cout << "Noise Type : Outlier noise" << std::endl;
             i++;
-        } // end if
+        }
     } // end for
 
     // Add noise
@@ -124,5 +121,11 @@ int main( int argc, char** argv ) {
     object->setSize( 1 );
     object->updateMinMaxCoords(); 
 
+    // Exec. SPBR
+    const std::string output_file( outSPBRfile );
+    std::string EXEC( "spbr " );
+    EXEC += output_file;
+    system( EXEC.c_str() );
+
     return 0;
-} // End main()
+}

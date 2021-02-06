@@ -1,23 +1,30 @@
 .vscode/
 
+*.sh
+Makefile
+
 coords/addNoise2coord
 coords/spbr
 coords/Makefile
 coords/Makefile.kvs
+coords/Makefile.old
 coords/*.o
 coords/*.spbr
 coords/*.txt
 coords/DOC/
 coords/IMAGE_DATA/
 coords/SPBR_DATA/
+coords/*.sh
 
 color/addNoise2color
 color/spbr
 color/Makefile
 color/Makefile.kvs
+color/Makefile.old
 color/*.o
 color/*.spbr
 color/*.txt
 color/DOC/
 color/IMAGE_DATA/
 color/SPBR_DATA/
+color/*.sh

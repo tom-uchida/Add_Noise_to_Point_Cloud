@@ -4,7 +4,7 @@
 #include <algorithm> 
 #include <iterator>
 
-#include "xyzBinaryReader.h"
+#include "xyz_binary_reader.h"
 #include "spcomment_xyz.h"
 
 const int BUF_MAX = 1024;

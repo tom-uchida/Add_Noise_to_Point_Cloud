@@ -22,4 +22,4 @@ $ ./addNoise2color
 ## Visualization Result
 |Original color|sigma=20|sigma=40|
 |:-:|:-:|:-:|
-|![color_noise1](sample_images/funehoko_original_color.bmp)|![color_noise2](sample_images/funehoko_50per_sigma20.bmp)|![color_noise3](sample_images/funehoko_50per_sigma40.bmp)|
+|![color_noise1](figures/funehoko_original_color.bmp)|![color_noise2](figures/funehoko_50per_sigma20.bmp)|![color_noise3](figures/funehoko_50per_sigma40.bmp)|

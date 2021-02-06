@@ -36,4 +36,4 @@ $ ./addNoise2coords
 
 |Gaussian noise|Outlier noise|
 |:-:|:-:|
-|![gaussian](sample_images/gaussian_10per_1e-2.bmp)|![spike](sample_images/outlier_10per_1e-2.bmp)|
+|![gaussian](figures/gaussian_10per_1e-2.bmp)|![outlier](figures/outlier_10per_1e-2.bmp)|
