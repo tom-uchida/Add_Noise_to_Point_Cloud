@@ -17,7 +17,8 @@ public:
     AddNoise( const double _noise_prob, const double _sigma );
 
     void setNoiseType( const NoiseType _type );
-    void addNoise( kvs::PolygonObject* _ply );
+    void addNoise2Coords( kvs::PolygonObject* _ply );
+    void addNoise2Color( kvs::PolygonObject* _ply );
     std::vector<bool> getIsNoisePoints( void ) const { return m_is_noise_points; }
 
 private:

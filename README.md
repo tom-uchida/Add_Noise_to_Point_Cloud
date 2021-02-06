@@ -1,21 +1,73 @@
-# Add_Noise_to_Point_Cloud
-## Overview
-- Add noise to point cloud
+# Add Noise to Point Cloud
 
-- We have the following two types of "noise targets"
-   - Coordinates
-      - Gaussian noise
-      - Outlier noise
-   - Color
-      - Gaussian
+## Coords noise
+
+### Overview
+- Add the following two types of noises to the coordinates of the point cloud:
+   - Gaussian noise
+   - Outlier noise
+
+### Usage
+```
+=============================================
+     Add Noise to "Coords" of Point Cloud
+               Tomomasa Uchida
+                 2021/02/06
+=============================================
+
+  USAGE:
+  ./addNoise2coords [input_file] [output_file] [noise_probability] [sigma] [noise_type]
+
+  EXAMPLE:
+  ./addNoise2coords input.ply output.spbr 0.1 0.02 -g
+
+   [noise_probability]
+    Add noise with 10(=0.1*100) percent.
+
+   [sigma]
+    Gaussian: sigma = 0.02
+    Outlier : none(skip the sigma.)
+
+   [noise_type]
+    -g: Gaussian noise
+    -o: Outlier noise
+```
 
 ## Visualization Results
-### Noise in "coordinate" space
 |Gaussian noise|Outlier noise|
 |:-:|:-:|
-|![gaussian](coords/figures/gaussian_10per_1e-2.bmp)|![outlier](coords/figures/outlier_10per_1e-2.bmp)|
+|![](figures/coords_gaussian.bmp)|![](figures/coords_outlier.bmp)|
 
-### Noise in "color" space
-|Original color|sigma=20|sigma=40|
-|:-:|:-:|:-:|
-|![color_noise1](color/figures/funehoko_original_color.bmp)|![color_noise2](color/figures/funehoko_50per_sigma20.bmp)|![color_noise3](color/figures/funehoko_50per_sigma40.bmp)|
+
+<br>
+
+## Color noise
+
+### Overview
+- Add the gaussian noise to the color of the point cloud.
+
+### Usage
+```
+============================================
+     Add Noise to "Color" of Point Cloud
+              Tomomasa Uchida
+                2021/02/06
+============================================
+
+  USAGE:
+  addNoise2color [input_file] [output_file] [noise_probability] [sigma]
+
+  EXAMPLE:
+  addNoise2color input.ply output.spbr 0.2 40
+
+   [noise_probability]
+    Add noise with 20(=0.2*100) percent.
+
+   [sigma]
+    Gaussian: sigma = 40
+```
+
+## Visualization Results
+|Gaussian noise|
+|:-:|
+|![](figures/color_gaussian.bmp)|

@@ -1,8 +1,8 @@
-// ============================================
-//      Add Noise to Coords of Point Cloud
-//               Tomomasa Uchida
-//                 2021/02/06
-// ============================================
+// ===========================================
+//      Add Noise to Color of Point Cloud
+//              Tomomasa Uchida
+//                2021/02/06
+// ===========================================
 
 #include <iostream>
 #include <cstring> 
@@ -11,7 +11,6 @@
 #include "import_point_clouds.h"
 #include "add_noise.h"
 #include "write_spbr.h"
-#include "noise_type.h"
 
 #include <kvs/PolygonObject>
 #include <kvs/PointObject>
@@ -22,36 +21,31 @@
 #include <kvs/Coordinate> 
 #include <kvs/ColorMap>
 
-const char OUT_FILE[] = "SPBR_DATA/out_coords_noise.spbr";
+const char OUT_FILE[] = "SPBR_DATA/out_color_noise.spbr";
 
 inline void message() {
     std::cout << "\n";
-    std::cout << "=============================================" << std::endl;
-    std::cout << "     Add Noise to \"Coords\" of Point Cloud"   << std::endl;
-    std::cout << "               Tomomasa Uchida"                << std::endl;
-    std::cout << "                 2021/02/06"                   << std::endl;
-    std::cout << "=============================================" << std::endl;
+    std::cout << "============================================" << std::endl;
+    std::cout << "     Add Noise to \"Color\" of Point Cloud"   << std::endl;
+    std::cout << "              Tomomasa Uchida"                << std::endl;
+    std::cout << "                2021/02/06"                   << std::endl;
+    std::cout << "============================================" << std::endl;
     std::cout << "\n";
 }
 
 inline void display_usage( char* _argv0 ) {
     std::cout   << "  USAGE:\n  "
                 << _argv0
-                << " [input_file] [output_file] [noise_probability] [sigma] [noise_type]"
+                << " [input_file] [output_file] [noise_probability] [sigma]"
                 << "\n\n  EXAMPLE:\n  "
                 << _argv0
-                << " input.ply output.spbr 0.1 0.1 -g"
+                << " input.ply output.spbr 0.2 40"
                 << "\n\n"
                 << "   [noise_probability]\n"
-                << "    Add noise with 10(=0.1*100) percent."
+                << "    Add noise with 20(=0.2*100) percent."
                 << "\n\n"
                 << "   [sigma]\n"
-                << "    Gaussian: sigma = 0.1\n"
-                << "    Outlier : none(skip the sigma.)"
-                << "\n\n"
-                << "   [noise_type]\n"
-                << "    -g: Gaussian noise\n"
-                << "    -o: Outlier noise\n"
+                << "    Gaussian: sigma = 40\n"
                 << std::endl;
 }
 
@@ -60,7 +54,7 @@ int main( int argc, char** argv ) {
     strcpy( outSPBRfile, OUT_FILE ); 
     message();
 
-    if ( argc != 6 ) {    
+    if ( argc != 5 ) {    
         display_usage( argv[0] );
         exit(1);
     } else {
@@ -82,34 +76,13 @@ int main( int argc, char** argv ) {
     );
 
     // Set noise type
-    for ( size_t i = 1; i < argc; i++ ) {
-        // Gaussian
-        if ( !strncmp( GAUSSIAN_TYPE, argv[i], strlen( GAUSSIAN_TYPE ) ) ) {
-            an->setNoiseType( AddNoise::Gaussian );
-            i++;
-
-        // Outlier
-        } else if ( !strncmp( OUTLIER_TYPE, argv[i], strlen( OUTLIER_TYPE ) ) ) {
-            an->setNoiseType( AddNoise::Outlier );
-            i++;
-        }
-    } // end for
+    an->setNoiseType( AddNoise::Gaussian );
 
     // Add noise
-    an->addNoise( ply );
-
-    // Apply color
-    std::vector<unsigned char>  colors;
-    const kvs::ValueArray<kvs::UInt8> original_colors = ply->colors();
-    for ( size_t i = 0; i < ply->numberOfVertices(); i++ ) {
-        colors.push_back( original_colors[3*i]);
-        colors.push_back( original_colors[3*i+1] );
-        colors.push_back( original_colors[3*i+2] );
-    }
-    ply->setColors( kvs::ValueArray<kvs::UInt8>( colors ) );
+    an->addNoise2Color( ply );
 
     // Write to spbr file
-    const WritingDataType type = Ascii; // Writing data as ascii
+    const WritingDataType type = Ascii;
     writeSPBR(
         ply,            /* kvs::PolygonObject *_ply     */
         outSPBRfile,    /* char*              _filename */
