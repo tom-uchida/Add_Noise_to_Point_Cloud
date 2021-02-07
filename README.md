@@ -1,5 +1,14 @@
 # Add Noise to Point Cloud
 
+## Example
+```
+$ sh config.sh
+$ make
+$ make install
+$ make test_coords_gaussian
+$ make test_coords_outlier
+$ make test_color_gaussian
+```
 ## Coords noise
 
 ### Overview
